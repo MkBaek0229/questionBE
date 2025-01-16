@@ -1,6 +1,6 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import pool from "../../db/connection.js"; // .js 확장자를 명시적으로 추가
+import pool from "../db/connection.js"; // 올바른 경로로 수정
 
 const router = express.Router();
 
@@ -66,8 +66,6 @@ const registerExpert = async (req, res) => {
 const loginExpert = async (req, res) => {
   const { email, password } = req.body;
 
-  console.log("Login Request:", req.body); // 요청 데이터 출력
-
   if (!email || !password) {
     return res
       .status(400)
@@ -101,8 +99,6 @@ const loginExpert = async (req, res) => {
       email: expert.email,
       name: expert.name,
     };
-
-    console.log("Session Data:", req.session.expert); // 세션 데이터 확인
 
     res.status(200).json({
       resultCode: "S-1",

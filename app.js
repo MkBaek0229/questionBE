@@ -4,75 +4,103 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
-//import { createClient } from "redis";
-
-import { register, login, logout } from "./routes/auth.js";
+import { register, login, logout, getUserInfo } from "./routes/auth.js";
+import { registerExpert, loginExpert, logoutExpert } from "./routes/expert.js";
+import { postsystem, getsystems } from "./routes/system.js";
+import { sendVerificationCode, verifyCode } from "./routes/email.js";
 import {
-  registerExpert,
-  loginExpert,
-  logoutExpert,
-} from "./routes/expert/expert.js";
+  handleQuantitativeSave,
+  handleQualitativeSave,
+  handleSelfAssessmentSave,
+  getQuantitativeData,
+  getQualitativeData,
+} from "./routes/selftest.js";
+import {
+  completeSelfTest,
+  getAssessmentResults,
+  getAssessmentStatuses,
+} from "./routes/result.js";
 
-import { sendVerificationEmail, verifyEmailCode } from "./routes/email.js";
-
-// Load environment variables
 dotenv.config();
 
 const app = express();
 
-// Middleware configuration
+// 미들웨어 설정
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-// CORS configuration
+// CORS 설정
 app.use(
   cors({
-    origin: "http://localhost:5173", // Replace with your frontend origin
+    origin: process.env.CLIENT_URL || "http://localhost:5173", // 프론트엔드 출처 설정
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true, // Allow cookies to be sent
+    credentials: true, // 쿠키 전송 허용
   })
 );
 
-// Session configuration
+// 세션 설정
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "default_secret", // Use a default if SESSION_SECRET is missing
+    secret: process.env.SESSION_SECRET || "default_secret", // 세션 비밀키 설정
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // Set to true if using HTTPS
+      secure: process.env.NODE_ENV === "production", // 프로덕션 환경에서만 보안 설정
       httpOnly: true,
-      maxAge: 3600000, // 1 hour
+      maxAge: 3600000, // 1시간
     },
   })
 );
 
-// const redisClient = createClient({
-//   host: process.env.REDIS_HOST,
-//   port: process.env.REDIS_PORT,
-// });
+// 인증 미들웨어
+const requireAuth = (req, res, next) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ message: "로그인이 필요합니다." });
+  }
+  next();
+};
 
-// redisClient.on("error", (err) => console.error("Redis error:", err));
-// await redisClient.connect();
-
-// 기관회원 회원관리 Route
+// 기관회원 라우트
 app.post("/register", register);
 app.post("/login", login);
 app.post("/logout", logout);
+app.get("/user", requireAuth, getUserInfo); // 로그인 상태에서만 접근 가능
 
-// 이메일 인증 관련 라우팅
-app.post("/email/send-code", sendVerificationEmail); // 인증코드 전송
-app.post("/email/verify-code", verifyEmailCode); // 인증코드 확인
-
-// 전문가 회원관리 Route
-
-// 전문가 회원관리 Route
+// 전문가 회원관리 라우트
 app.post("/register/expert", registerExpert);
 app.post("/login/expert", loginExpert);
 app.post("/logout/expert", logoutExpert);
 
-// Server initialization
+// 이메일 인증 라우트
+app.post("/email/send-verification-code", sendVerificationCode);
+app.post("/email/verify-code", verifyCode);
+
+// 시스템 라우트
+app.post("/systems", requireAuth, postsystem);
+app.get("/systems", requireAuth, getsystems);
+
+// 자기 평가 라우트
+app.post("/selftest/quantitative", requireAuth, handleQuantitativeSave);
+app.post("/selftest/qualitative", requireAuth, handleQualitativeSave);
+app.post("/selftest", requireAuth, handleSelfAssessmentSave);
+app.get("/selftest/quantitative", requireAuth, getQuantitativeData);
+app.get("/selftest/qualitative", requireAuth, getQualitativeData);
+
+// 평가 결과 라우트
+app.post("/assessment/complete", requireAuth, completeSelfTest);
+app.get("/assessment/result", requireAuth, getAssessmentResults);
+app.get("/assessment/status", requireAuth, getAssessmentStatuses);
+
+// 에러 처리 미들웨어
+app.use((err, req, res, next) => {
+  console.error("서버 에러 발생:", err);
+  res
+    .status(500)
+    .json({ message: "서버 오류가 발생했습니다.", error: err.message });
+});
+
+// 서버 초기화
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
