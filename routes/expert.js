@@ -1,10 +1,11 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import pool from "../db/connection.js"; // 올바른 경로로 수정
+import pool from "../db/connection.js"; // DB 연결
+import session from "express-session";
 
 const router = express.Router();
 
-// 전문가 회원가입
+// 🔹 전문가 회원가입
 const registerExpert = async (req, res) => {
   const {
     email,
@@ -30,13 +31,22 @@ const registerExpert = async (req, res) => {
   }
 
   try {
-    // 비밀번호 해싱 및 전문가 등록
+    // 이메일 중복 확인
+    const [existingUser] = await pool.query(
+      "SELECT * FROM expert WHERE email = ?",
+      [email]
+    );
+    if (existingUser.length > 0) {
+      return res
+        .status(400)
+        .json({ resultCode: "F-2", msg: "이미 가입된 이메일입니다." });
+    }
+
+    // 비밀번호 해싱 후 저장
     const hashedPassword = await bcrypt.hash(password, 10);
     await pool.query(
-      `
-      INSERT INTO expert (name, institution_name, ofcps, phone_number, email, major_carrea, password) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-      `,
+      `INSERT INTO expert (name, institution_name, ofcps, phone_number, email, major_carrea, password) 
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         name,
         institution_name,
@@ -48,21 +58,23 @@ const registerExpert = async (req, res) => {
       ]
     );
 
-    const [rows] = await pool.query(
-      "SELECT id, name, email FROM expert WHERE id = LAST_INSERT_ID()"
+    const [newUser] = await pool.query(
+      "SELECT id, name, email FROM expert WHERE email = ?",
+      [email]
     );
 
     res
       .status(201)
-      .json({ resultCode: "S-1", msg: "회원가입 성공", data: rows[0] });
+      .json({ resultCode: "S-1", msg: "회원가입 성공", data: newUser[0] });
   } catch (error) {
-    console.error("Error registering expert:", error);
+    console.error("회원가입 오류:", error);
     res
       .status(500)
       .json({ resultCode: "F-1", msg: "서버 에러 발생", error: error.message });
   }
 };
 
+// 🔹 전문가 로그인
 const loginExpert = async (req, res) => {
   const { email, password } = req.body;
 
@@ -77,27 +89,32 @@ const loginExpert = async (req, res) => {
       email,
     ]);
 
-    if (rows.length === 0) {
-      return res.status(400).json({
-        resultCode: "F-2",
-        msg: "이메일 또는 비밀번호가 잘못되었습니다.",
-      });
+    if (!rows || rows.length === 0) {
+      return res
+        .status(400)
+        .json({
+          resultCode: "F-2",
+          msg: "이메일 또는 비밀번호가 잘못되었습니다.",
+        });
     }
 
     const expert = rows[0];
     const isMatch = await bcrypt.compare(password, expert.password);
-
     if (!isMatch) {
-      return res.status(400).json({
-        resultCode: "F-2",
-        msg: "이메일 또는 비밀번호가 잘못되었습니다.",
-      });
+      return res
+        .status(400)
+        .json({
+          resultCode: "F-2",
+          msg: "이메일 또는 비밀번호가 잘못되었습니다.",
+        });
     }
 
+    // ✅ 로그인 성공 시 세션에 저장
     req.session.expert = {
       id: expert.id,
       email: expert.email,
       name: expert.name,
+      role: "expert", // 🔹 역할 추가
     };
 
     res.status(200).json({
@@ -106,13 +123,14 @@ const loginExpert = async (req, res) => {
       data: req.session.expert,
     });
   } catch (error) {
-    console.error("Error logging in expert:", error);
+    console.error("로그인 오류:", error);
     res
       .status(500)
       .json({ resultCode: "F-1", msg: "서버 에러 발생", error: error.message });
   }
 };
 
+// 🔹 전문가 로그아웃
 const logoutExpert = (req, res) => {
   req.session.destroy((err) => {
     if (err) {

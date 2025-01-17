@@ -9,8 +9,10 @@ const register = async (req, res) => {
     representative_name,
     email,
     password,
-    phone,
+    phone_number,
   } = req.body;
+
+  console.log("📩 받은 데이터:", req.body); // ✅ 디버깅 로그 추가
 
   try {
     const [existingUser] = await pool.query(
@@ -31,7 +33,7 @@ const register = async (req, res) => {
         representative_name,
         email,
         hashedPassword,
-        phone,
+        phone_number,
       ]
     );
 
@@ -50,7 +52,7 @@ const login = async (req, res) => {
     const [user] = await pool.query("SELECT * FROM User WHERE email = ?", [
       email,
     ]);
-    if (user.length === 0) {
+    if (!user || user.length === 0) {
       return res
         .status(400)
         .json({ message: "이메일 또는 비밀번호가 잘못되었습니다." });
@@ -67,6 +69,7 @@ const login = async (req, res) => {
       id: user[0].id,
       email: user[0].email,
       name: user[0].representative_name,
+      role: "user",
     };
 
     res.status(200).json({ message: "로그인 성공", user: req.session.user });
