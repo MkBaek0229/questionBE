@@ -69,7 +69,7 @@ const login = async (req, res) => {
       id: user[0].id,
       email: user[0].email,
       name: user[0].representative_name,
-      role: "user",
+      member_type: "user",
     };
 
     res.status(200).json({ message: "로그인 성공", user: req.session.user });
