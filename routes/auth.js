@@ -72,10 +72,16 @@ const login = async (req, res) => {
       member_type: "user",
     };
 
-    res.status(200).json({ message: "로그인 성공", user: req.session.user });
+    res.status(200).json({
+      resultCode: "S-1",
+      message: "로그인 성공",
+      data: req.session.user,
+    });
   } catch (error) {
-    console.error("로그인 오류:", error);
-    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    console.error("❌ [EXPERT LOGIN] 로그인 오류:", error);
+    res
+      .status(500)
+      .json({ resultCode: "F-1", msg: "서버 에러 발생", error: error.message });
   }
 };
 
