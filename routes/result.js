@@ -57,21 +57,34 @@ const completeSelfTest = async (req, res) => {
   console.log("completeSelfTest called with:", { systemId, userId });
 
   try {
-    // 점수 및 등급 계산
+    // ✅ 1️⃣ `assessment_id`를 `self_assessment`에서 조회
+    const [selfAssessmentResult] = await pool.query(
+      "SELECT id FROM self_assessment WHERE system_id = ? AND user_id = ?",
+      [systemId, userId]
+    );
+
+    if (selfAssessmentResult.length === 0) {
+      return res.status(404).json({
+        message: "자가진단 입력 데이터가 없습니다.",
+      });
+    }
+    const assessmentId = selfAssessmentResult[0].id; // 조회한 자가진단 입력 ID
+    console.log("✅ Retrieved assessment_id:", assessmentId);
+    // ✅ 2️⃣ 점수 및 등급 계산
     const { score, grade } = await calculateAssessmentScore(systemId);
 
     console.log("Calculated score and grade:", { score, grade });
 
-    // 결과 저장
+    // ✅ 3️⃣ `assessment_id` 포함하여 결과 저장
     const query = `
-      INSERT INTO assessment_result (system_id, user_id, score, feedback_status, grade)
-      VALUES (?, ?, ?, '전문가 자문이 반영되기전입니다', ?)
+      INSERT INTO assessment_result (system_id, user_id, assessment_id, score, feedback_status, grade)
+      VALUES (?, ?, ?, ?, '전문가 자문이 반영되기전입니다', ?)
       ON DUPLICATE KEY UPDATE
         score = VALUES(score),
         grade = VALUES(grade),
         feedback_status = '전문가 자문이 반영되기전입니다'
     `;
-    const values = [systemId, userId, score, grade];
+    const values = [systemId, userId, assessmentId, score, grade];
     console.log("Executing query:", query, "with values:", values);
 
     await pool.query(query, values);

@@ -14,6 +14,7 @@ import {
   handleSelfAssessmentSave,
   getQuantitativeData,
   getQualitativeData,
+  getSelfAssessmentData,
 } from "./routes/selftest.js";
 import {
   completeSelfTest,
@@ -84,6 +85,7 @@ app.get("/systems", requireAuth, getsystems);
 app.post("/selftest/quantitative", requireAuth, handleQuantitativeSave);
 app.post("/selftest/qualitative", requireAuth, handleQualitativeSave);
 app.post("/selftest", requireAuth, handleSelfAssessmentSave);
+app.get("/selftest", requireAuth, getSelfAssessmentData);
 app.get("/selftest/quantitative", requireAuth, getQuantitativeData);
 app.get("/selftest/qualitative", requireAuth, getQualitativeData);
 

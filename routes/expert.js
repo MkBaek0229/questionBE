@@ -91,12 +91,10 @@ const loginExpert = async (req, res) => {
 
     if (!rows || rows.length === 0) {
       console.log("⚠️ [EXPERT LOGIN] 이메일을 찾을 수 없음:", email); // ✅ 디버깅 로그 추가
-      return res
-        .status(400)
-        .json({
-          resultCode: "F-2",
-          msg: "이메일 또는 비밀번호가 잘못되었습니다.",
-        });
+      return res.status(400).json({
+        resultCode: "F-2",
+        msg: "이메일 또는 비밀번호가 잘못되었습니다.",
+      });
     }
 
     const expert = rows[0];
@@ -106,12 +104,10 @@ const loginExpert = async (req, res) => {
     const isMatch = await bcrypt.compare(password, expert.password);
     if (!isMatch) {
       console.log("❌ [EXPERT LOGIN] 비밀번호 불일치:", email); // ✅ 디버깅 로그 추가
-      return res
-        .status(400)
-        .json({
-          resultCode: "F-2",
-          msg: "이메일 또는 비밀번호가 잘못되었습니다.",
-        });
+      return res.status(400).json({
+        resultCode: "F-2",
+        msg: "이메일 또는 비밀번호가 잘못되었습니다.",
+      });
     }
 
     // 세션 저장
@@ -123,13 +119,11 @@ const loginExpert = async (req, res) => {
     };
     console.log("✅ [EXPERT LOGIN] 세션 저장 완료:", req.session.expert); // ✅ 디버깅 로그 추가
 
-    res
-      .status(200)
-      .json({
-        resultCode: "S-1",
-        msg: "로그인 성공",
-        data: req.session.expert,
-      });
+    res.status(200).json({
+      resultCode: "S-1",
+      msg: "로그인 성공",
+      data: req.session.expert,
+    });
   } catch (error) {
     console.error("❌ [EXPERT LOGIN] 로그인 오류:", error);
     res
