@@ -26,6 +26,14 @@ import {
   getAssessmentStatuses,
 } from "./routes/result.js";
 
+import {
+  getAssignedSystems,
+  getSystemAssessmentResult,
+  addFeedback,
+  updateFeedback,
+  SystemsResult,
+} from "./routes/feedback.js";
+
 dotenv.config();
 
 const app = express();
@@ -98,6 +106,12 @@ app.post("/assessment/complete", requireAuth, completeSelfTest);
 app.get("/assessment/result", requireAuth, getAssessmentResults);
 app.get("/assessment/status", requireAuth, getAssessmentStatuses);
 
+// 전문가회원 관련(배정된시스템 조회, 자가진단 결과 조회, 피드백 추가, 피드백 수정 ) 라우트
+app.get("/assigned-systems", getAssignedSystems);
+app.get("/system-result", getSystemAssessmentResult);
+app.post("/add-feedback", addFeedback);
+app.put("/update-feedback", updateFeedback);
+app.get("/systems-results", SystemsResult);
 // 에러 처리 미들웨어
 app.use((err, req, res, next) => {
   console.error("서버 에러 발생:", err);
