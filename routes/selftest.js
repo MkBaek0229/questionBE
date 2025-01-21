@@ -3,49 +3,6 @@ import pool from "../db/connection.js"; // DB 연결 파일
 
 const router = express.Router();
 
-// Get Existing Self-Assessment Data
-const getSelfAssessmentData = async (req, res) => {
-  const { systemId, userId } = req.query;
-
-  console.log(
-    "📌 [GET] 자가진단 데이터 요청 - systemId:",
-    systemId,
-    "userId:",
-    userId
-  );
-
-  if (!systemId || !userId) {
-    return res
-      .status(400)
-      .json({ message: "System ID와 User ID가 필요합니다." });
-  }
-
-  try {
-    const [results] = await pool.query(
-      "SELECT * FROM self_assessment WHERE system_id = ? AND user_id = ?",
-      [systemId, userId]
-    );
-
-    if (results.length === 0) {
-      console.warn(
-        "⚠️ 해당 systemId와 userId에 대한 자가진단 데이터가 없음:",
-        systemId,
-        userId
-      );
-      return res.status(404).json({ message: "자가진단 데이터가 없습니다." });
-    }
-
-    console.log("✅ [응답] 자가진단 데이터 조회 성공:", results);
-    res.status(200).json(results[0]); // 데이터가 있으면 첫 번째 항목 반환
-  } catch (error) {
-    console.error(
-      "❌ [ERROR] 자가진단 데이터를 불러오는 중 오류 발생:",
-      error.message
-    );
-    res.status(500).json({ message: "서버 오류", error: error.message });
-  }
-};
-
 // Save Data Helper Function
 const saveData = async (query, values) => {
   const connection = await pool.getConnection();
@@ -94,6 +51,15 @@ const handleSelfAssessmentSave = async (req, res) => {
         member_info_homepage, external_data_provision, cctv_operation,
         task_outsourcing, personal_info_disposal
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        organization = VALUES(organization),
+        user_scale = VALUES(user_scale),
+        personal_info_system = VALUES(personal_info_system),
+        member_info_homepage = VALUES(member_info_homepage),
+        external_data_provision = VALUES(external_data_provision),
+        cctv_operation = VALUES(cctv_operation),
+        task_outsourcing = VALUES(task_outsourcing),
+        personal_info_disposal = VALUES(personal_info_disposal)
     `;
 
     const values = [
@@ -123,7 +89,6 @@ const handleQuantitativeSave = async (req, res) => {
   const { quantitativeResponses } = req.body;
   console.log("✅ [API] 정량 설문 저장 요청 데이터:", req.body);
 
-  // 필수 데이터 검증
   if (!quantitativeResponses || !Array.isArray(quantitativeResponses)) {
     return res
       .status(400)
@@ -132,10 +97,9 @@ const handleQuantitativeSave = async (req, res) => {
 
   const query = `
     INSERT INTO quantitative (
-      question_number, question, response, additional_comment, system_id
-    ) VALUES (?, ?, ?, ?, ?)
+      question_number, question, response, additional_comment, system_id, user_id
+    ) VALUES (?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE
-      question = VALUES(question),
       response = VALUES(response),
       additional_comment = VALUES(additional_comment)
   `;
@@ -144,14 +108,14 @@ const handleQuantitativeSave = async (req, res) => {
     for (const response of quantitativeResponses) {
       const {
         questionNumber,
-        question, // 추가된 필드
+        question,
         response: answer,
         additionalComment,
         systemId,
+        userId,
       } = response;
 
-      // 필수 필드 검증
-      if (!questionNumber || !answer || !systemId || !question) {
+      if (!questionNumber || !answer || !systemId || !userId || !question) {
         console.error("Invalid response:", response);
         return res.status(400).json({
           message: "Missing required fields in quantitative response.",
@@ -160,17 +124,20 @@ const handleQuantitativeSave = async (req, res) => {
 
       const values = [
         questionNumber,
-        question, // 추가된 필드
+        question,
         answer,
         additionalComment || null,
         systemId,
+        userId,
       ];
 
       console.log("Saving quantitative response:", values);
-      await saveData(query, values);
+      await pool.query(query, values);
     }
 
-    res.status(200).json({ message: "Quantitative data saved successfully." });
+    res
+      .status(200)
+      .json({ message: "정량 평가 데이터가 성공적으로 저장되었습니다." });
   } catch (error) {
     console.error("Error saving quantitative data:", error.message);
     res
@@ -187,10 +154,9 @@ const handleQualitativeSave = async (req, res) => {
     additionalComment,
     systemId,
     userId,
-    indicator, // ✅ question 대신 indicator 사용
+    indicator,
   } = req.body;
 
-  // 필수 필드 확인
   if (!questionNumber || !systemId || !userId || !indicator) {
     return res.status(400).json({ message: "필수 필드가 누락되었습니다." });
   }
@@ -200,14 +166,13 @@ const handleQualitativeSave = async (req, res) => {
       question_number, indicator, response, additional_comment, system_id, user_id
     ) VALUES (?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE
-      indicator = VALUES(indicator),
       response = VALUES(response),
       additional_comment = VALUES(additional_comment)
   `;
 
   const values = [
     questionNumber,
-    indicator, // ✅ question 대신 indicator 사용
+    indicator,
     response || "해당없음",
     additionalComment || null,
     systemId,
@@ -216,7 +181,9 @@ const handleQualitativeSave = async (req, res) => {
 
   try {
     await pool.query(query, values);
-    res.status(200).json({ message: "정성 설문 저장 성공." });
+    res
+      .status(200)
+      .json({ message: "정성 설문 데이터가 성공적으로 저장되었습니다." });
   } catch (error) {
     console.error("❌ 정성 설문 저장 실패:", error.message);
     res.status(500).json({ message: "서버 오류", error: error.message });
@@ -301,5 +268,4 @@ export {
   handleQualitativeSave,
   getQuantitativeData,
   getQualitativeData,
-  getSelfAssessmentData,
 };

@@ -5,7 +5,12 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
 import { register, login, logout, getUserInfo } from "./routes/auth.js";
-import { registerExpert, loginExpert, logoutExpert } from "./routes/expert.js";
+import {
+  registerExpert,
+  loginExpert,
+  logoutExpert,
+  getExpertInfo,
+} from "./routes/expert.js";
 import { postsystem, getsystems } from "./routes/system.js";
 import { sendVerificationCode, verifyCode } from "./routes/email.js";
 import {
@@ -14,7 +19,6 @@ import {
   handleSelfAssessmentSave,
   getQuantitativeData,
   getQualitativeData,
-  getSelfAssessmentData,
 } from "./routes/selftest.js";
 import {
   completeSelfTest,
@@ -56,7 +60,7 @@ app.use(
 
 // 인증 미들웨어
 const requireAuth = (req, res, next) => {
-  if (!req.session || !req.session.user) {
+  if (!req.session || (!req.session.user && !req.session.expert)) {
     return res.status(401).json({ message: "로그인이 필요합니다." });
   }
   next();
@@ -72,6 +76,7 @@ app.get("/user", requireAuth, getUserInfo); // 로그인 상태에서만 접근 
 app.post("/register/expert", registerExpert);
 app.post("/login/expert", loginExpert);
 app.post("/logout/expert", logoutExpert);
+app.get("/expert", requireAuth, getExpertInfo); // 🔹 전문가 로그인 상태 확인
 
 // 이메일 인증 라우트
 app.post("/email/send-verification-code", sendVerificationCode);
@@ -85,7 +90,6 @@ app.get("/systems", requireAuth, getsystems);
 app.post("/selftest/quantitative", requireAuth, handleQuantitativeSave);
 app.post("/selftest/qualitative", requireAuth, handleQualitativeSave);
 app.post("/selftest", requireAuth, handleSelfAssessmentSave);
-app.get("/selftest", requireAuth, getSelfAssessmentData);
 app.get("/selftest/quantitative", requireAuth, getQuantitativeData);
 app.get("/selftest/qualitative", requireAuth, getQualitativeData);
 
