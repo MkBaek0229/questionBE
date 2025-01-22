@@ -108,14 +108,14 @@ const handleQuantitativeSave = async (req, res) => {
     for (const response of quantitativeResponses) {
       const {
         questionNumber,
-        question,
+        question = "", // 기본값 설정
         response: answer,
         additionalComment,
         systemId,
         userId,
       } = response;
 
-      if (!questionNumber || !answer || !systemId || !userId || !question) {
+      if (!questionNumber || !answer || !systemId || !userId) {
         console.error("Invalid response:", response);
         return res.status(400).json({
           message: "Missing required fields in quantitative response.",
@@ -189,7 +189,6 @@ const handleQualitativeSave = async (req, res) => {
     res.status(500).json({ message: "서버 오류", error: error.message });
   }
 };
-
 // Get Quantitative Data
 const getQuantitativeData = async (req, res) => {
   const { systemId } = req.query;

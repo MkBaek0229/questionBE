@@ -10,7 +10,7 @@ const postsystem = async (req, res) => {
     is_private,
     is_unique,
     is_resident,
-    reason,
+    reason = "동의", // 기본값 설정
   } = req.body;
 
   const user_id = req.session.user?.id;
@@ -71,24 +71,30 @@ const getsystems = async (req, res) => {
       `SELECT 
           systems.id AS system_id,
           systems.name AS system_name,
+          systems.min_subjects,
+          systems.max_subjects,
           systems.purpose,
+          systems.is_private,
+          systems.is_unique,
+          systems.is_resident,
+          systems.reason,
           systems.assessment_status,
+          systems.assignment_id,
+          systems.created_at,
           User.institution_name,
           User.representative_name
-         FROM systems
-         INNER JOIN User ON systems.user_id = User.id
-         WHERE systems.user_id = ?
-         ORDER BY systems.created_at DESC`,
+       FROM systems
+       JOIN User ON systems.user_id = User.id
+       WHERE systems.user_id = ?`,
       [user_id]
     );
 
     res.status(200).json(systems);
-  } catch (err) {
-    console.error("시스템 목록 조회 실패:", err);
-    res.status(500).json({
-      message: "시스템 목록 조회 중 오류가 발생했습니다.",
-      error: err,
-    });
+  } catch (error) {
+    console.error("시스템 목록 조회 실패:", error.message);
+    res
+      .status(500)
+      .json({ message: "Internal server error.", error: error.message });
   }
 };
 
