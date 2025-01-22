@@ -32,6 +32,7 @@ import {
   addFeedback,
   updateFeedback,
   SystemsResult,
+  GetFeedbackBySystem,
 } from "./routes/feedback.js";
 import {
   loginSuperUser,
@@ -136,6 +137,7 @@ app.get("/assessment/status", requireAuth, getAssessmentStatuses);
 // 전문가 회원 관련 라우트
 app.get("/assigned-systems", requireAuth, getAssignedSystems);
 app.get("/system-result", requireAuth, getSystemAssessmentResult);
+app.get("/feedback", GetFeedbackBySystem);
 app.post("/add-feedback", requireAuth, addFeedback);
 app.put("/update-feedback", requireAuth, updateFeedback);
 app.get("/systems-results", requireAuth, SystemsResult);

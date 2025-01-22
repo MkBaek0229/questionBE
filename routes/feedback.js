@@ -145,10 +145,62 @@ const updateFeedback = async (req, res) => {
     res.status(500).json({ message: "서버 오류 발생", error: error.message });
   }
 };
+/**
+ * 🔹 전문가가 특정 시스템에 대해 작성한 피드백 단건 조회
+ * GET /feedback?expertId=EXPERT_ID&systemId=SYSTEM_ID
+ */
+const GetFeedbackBySystem = async (req, res) => {
+  const { expertId, systemId } = req.query;
+
+  if (!expertId || !systemId) {
+    return res
+      .status(400)
+      .json({ message: "전문가 ID와 시스템 ID가 필요합니다." });
+  }
+
+  try {
+    // ✅ 먼저 전문가가 해당 시스템에 배정되었는지 확인
+    const checkAssignmentQuery = `
+      SELECT id FROM assignment WHERE expert_id = ? AND systems_id = ?;
+    `;
+    const [assignment] = await pool.query(checkAssignmentQuery, [
+      expertId,
+      systemId,
+    ]);
+
+    if (assignment.length === 0) {
+      return res.status(403).json({
+        message: "해당 시스템에 대한 피드백을 조회할 권한이 없습니다.",
+      });
+    }
+
+    // ✅ 피드백 조회
+    const feedbackQuery = `
+      SELECT 
+          f.id AS feedback_id,
+          f.feedback_content,
+          f.created_at
+      FROM feedback f
+      JOIN assignment a ON f.assignment_id = a.id
+      WHERE a.expert_id = ? AND a.systems_id = ?;
+    `;
+
+    const [feedback] = await pool.query(feedbackQuery, [expertId, systemId]);
+
+    if (feedback.length === 0) {
+      return res.status(404).json({ message: "작성한 피드백이 없습니다." });
+    }
+
+    res.status(200).json(feedback[0]);
+  } catch (error) {
+    console.error("전문가 피드백 조회 실패:", error.message);
+    res.status(500).json({ message: "서버 오류 발생", error: error.message });
+  }
+};
 
 /**
  * 🔹 기관회원이 등록한 시스템의 자가진단 결과 및 전문가 피드백 조회
- * GET /user/systems-results?userId=기관회원ID
+ * GET /systems-results?userId=기관회원ID
  */
 const SystemsResult = async (req, res) => {
   const { userId } = req.query;
@@ -190,5 +242,6 @@ export {
   getSystemAssessmentResult,
   addFeedback,
   updateFeedback,
+  GetFeedbackBySystem,
   SystemsResult,
 };
