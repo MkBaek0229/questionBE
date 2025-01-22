@@ -33,6 +33,7 @@ import {
   updateFeedback,
   SystemsResult,
   GetFeedbackBySystem,
+  getSystemDetails,
 } from "./routes/feedback.js";
 import {
   loginSuperUser,
@@ -141,7 +142,7 @@ app.get("/feedback", GetFeedbackBySystem);
 app.post("/add-feedback", requireAuth, addFeedback);
 app.put("/update-feedback", requireAuth, updateFeedback);
 app.get("/systems-results", requireAuth, SystemsResult);
-
+app.get("/system-details", getSystemDetails);
 // 에러 처리 미들웨어
 app.use((err, req, res, next) => {
   console.error(`서버 에러 발생 [${req.method} ${req.path}]:`, err);

@@ -237,6 +237,70 @@ const SystemsResult = async (req, res) => {
   }
 };
 
+/**
+ * 🔹 전문가가 배정된 시스템 정보 조회
+ * GET /system-details
+ */
+
+const getSystemDetails = async (req, res) => {
+  const { expertId, systemId } = req.query;
+
+  if (!expertId || !systemId) {
+    return res
+      .status(400)
+      .json({ message: "전문가 ID와 시스템 ID가 필요합니다." });
+  }
+
+  try {
+    // 전문가가 해당 시스템에 배정되었는지 확인
+    const assignmentQuery = `
+      SELECT * FROM assignment
+      WHERE expert_id = ? AND systems_id = ?
+    `;
+    const [assignment] = await pool.query(assignmentQuery, [
+      expertId,
+      systemId,
+    ]);
+
+    if (assignment.length === 0) {
+      return res
+        .status(403)
+        .json({ message: "해당 시스템에 대한 접근 권한이 없습니다." });
+    }
+
+    // 시스템 정보 조회
+    const systemQuery = `
+      SELECT 
+        s.id AS system_id, 
+        s.name AS system_name, 
+        s.min_subjects, 
+        s.max_subjects, 
+        s.purpose, 
+        s.is_private, 
+        s.is_unique, 
+        s.is_resident, 
+        s.reason, 
+        s.assessment_status,
+        u.institution_name
+      FROM systems s
+      JOIN User u ON s.user_id = u.id
+      WHERE s.id = ?
+    `;
+    const [systemInfo] = await pool.query(systemQuery, [systemId]);
+
+    if (systemInfo.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "시스템 정보를 찾을 수 없습니다." });
+    }
+
+    res.status(200).json(systemInfo[0]); // 시스템 정보 반환
+  } catch (error) {
+    console.error("시스템 정보 조회 실패:", error.message);
+    res.status(500).json({ message: "서버 오류 발생", error: error.message });
+  }
+};
+
 export {
   getAssignedSystems,
   getSystemAssessmentResult,
@@ -244,4 +308,5 @@ export {
   updateFeedback,
   GetFeedbackBySystem,
   SystemsResult,
+  getSystemDetails,
 };
