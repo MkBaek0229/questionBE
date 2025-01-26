@@ -33,6 +33,7 @@ import {
   updateQuantitativeFeedback,
   SystemsResult,
   updateFeedbackStatus,
+  getSystemOwner,
 } from "./routes/feedback.js";
 import {
   loginSuperUser,
@@ -138,6 +139,7 @@ app.get("/assessment/status", requireAuth, getAssessmentStatuses);
 app.get("/assigned-systems", requireAuth, getAssignedSystems);
 app.get("/system-result", requireAuth, getSystemAssessmentResult);
 app.get("/systems-results", requireAuth, SystemsResult);
+app.get("/system-owner", getSystemOwner);
 
 //피드백
 app.post(

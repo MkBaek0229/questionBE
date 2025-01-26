@@ -22,7 +22,11 @@ const getAssignedSystems = async (req, res) => {
         FROM assignment a
         JOIN systems s ON a.systems_id = s.id
         JOIN User u ON s.user_id = u.id
-        LEFT JOIN assessment_result ar ON s.id = ar.system_id
+        LEFT JOIN assessment_result ar 
+        ON s.id = ar.system_id 
+        AND ar.completed_at = (
+        SELECT MAX(completed_at) FROM assessment_result WHERE system_id = s.id
+        ) 
         WHERE a.expert_id = ?;
       `;
 
@@ -166,9 +170,9 @@ const updateQuantitativeFeedback = async (req, res) => {
   try {
     const query = `
       INSERT INTO quantitative (
-        question_number, system_id, feedback
+        question_number, system_id, feedback,question
       )
-      VALUES (?, ?, ?)
+      VALUES (?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE feedback = VALUES(feedback);
     `;
 
@@ -180,6 +184,7 @@ const updateQuantitativeFeedback = async (req, res) => {
         questionNumber,
         systemId,
         feedback || "피드백 없음", // 기본값 설정
+        "질문 없음", // 기본값 설정
       ]);
     }
 
@@ -330,6 +335,46 @@ const updateFeedbackStatus = async (req, res) => {
   }
 };
 
+/**
+ * 🔹 특정 시스템을 등록한 기관회원의 userId 조회 API
+ */
+const getSystemOwner = async (req, res) => {
+  const { systemId } = req.query;
+
+  console.log("✅ [getSystemOwner] Received systemId:", systemId);
+
+  if (!systemId) {
+    return res
+      .status(400)
+      .json({ resultCode: "F-1", msg: "systemId가 필요합니다." });
+  }
+
+  try {
+    const query = "SELECT user_id FROM systems WHERE id = ?";
+    const [result] = await pool.query(query, [systemId]);
+
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ resultCode: "F-2", msg: "해당 시스템을 찾을 수 없습니다." });
+    }
+
+    res.status(200).json({
+      resultCode: "S-1",
+      msg: "기관회원 조회 성공",
+      userId: result[0].user_id,
+    });
+  } catch (error) {
+    console.error(
+      "❌ [getSystemOwner] 시스템 소유자 조회 실패:",
+      error.message
+    );
+    res
+      .status(500)
+      .json({ resultCode: "F-1", msg: "서버 오류 발생", error: error.message });
+  }
+};
+
 export {
   getAssignedSystems,
   getSystemAssessmentResult,
@@ -337,4 +382,5 @@ export {
   updateQuantitativeFeedback,
   updateQualitativeFeedback,
   updateFeedbackStatus,
+  getSystemOwner,
 };

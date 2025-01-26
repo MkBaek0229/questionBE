@@ -77,12 +77,14 @@ const completeSelfTest = async (req, res) => {
 
     // ✅ 3️⃣ `assessment_id` 포함하여 결과 저장
     const query = `
-      INSERT INTO assessment_result (system_id, user_id, assessment_id, score, feedback_status, grade)
-      VALUES (?, ?, ?, ?, '전문가 자문이 반영되기전입니다', ?)
-      ON DUPLICATE KEY UPDATE
-        score = VALUES(score),
-        grade = VALUES(grade),
-        feedback_status = '전문가 자문이 반영되기전입니다'
+     INSERT INTO assessment_result (system_id, user_id, assessment_id, score, feedback_status, completed_at, grade)
+     VALUES (?, ?, ?, ?, '전문가 자문이 반영되기전입니다', NOW(), ?)
+     ON DUPLICATE KEY UPDATE
+     score = VALUES(score),
+     feedback_status = VALUES(feedback_status),
+     completed_at = VALUES(completed_at),
+     grade = VALUES(grade);
+
     `;
     const values = [systemId, userId, assessmentId, score, grade];
     console.log("Executing query:", query, "with values:", values);
