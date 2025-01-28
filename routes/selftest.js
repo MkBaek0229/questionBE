@@ -70,177 +70,205 @@ const handleSelfAssessmentSave = async (req, res) => {
 };
 
 // 정량 데이터 저장
-const handleQuantitativeSave = async (req, res) => {
-  const { quantitativeResponses } = req.body;
+const saveQuantitativeResponses = async (req, res) => {
+  const { responses } = req.body;
 
-  if (!quantitativeResponses || !Array.isArray(quantitativeResponses)) {
-    return res
-      .status(400)
-      .json({ message: "Invalid quantitative responses format." });
+  if (!responses || !Array.isArray(responses)) {
+    return res.status(400).json({ message: "Invalid responses format." });
+  }
+
+  const user_id = req.session.user?.id;
+  if (!user_id) {
+    return res.status(401).json({ message: "로그인이 필요합니다." });
   }
 
   try {
     const query = `
-      INSERT INTO quantitative (
-        question_number, unit, evaluation_method, score, question,
-        legal_basis, criteria_and_references, file_upload, response,
-        additional_comment, feedback, system_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE
-        unit = VALUES(unit),
-        evaluation_method = VALUES(evaluation_method),
-        score = VALUES(score),
-        legal_basis = VALUES(legal_basis),
-        criteria_and_references = VALUES(criteria_and_references),
-        file_upload = VALUES(file_upload),
-        response = VALUES(response),
-        additional_comment = VALUES(additional_comment),
-        feedback = VALUES(feedback)
+      INSERT INTO quantitative_responses (system_id, user_id, question_id, response, additional_comment, file_path)
+      VALUES (?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE 
+        response = VALUES(response), 
+        additional_comment = CASE 
+          WHEN VALUES(response) = '자문 필요' THEN VALUES(additional_comment) 
+          ELSE NULL 
+        END,
+        file_path = VALUES(file_path);
     `;
 
+    const connection = await pool.getConnection();
+    await connection.beginTransaction();
+
     for (const {
-      questionNumber,
-      unit,
-      evaluationMethod,
-      score,
-      question,
-      legalBasis,
-      criteriaAndReferences,
-      fileUpload,
-      response: answer,
-      additionalComment,
-      feedback,
       systemId,
-    } of quantitativeResponses) {
-      // 기본값 설정
-      await pool.query(query, [
-        questionNumber, // 필수
-        unit || "단위 없음", // 기본값
-        evaluationMethod || "정량평가", // 기본값
-        score || 0, // 기본값
-        question || "질문 없음", // 기본값
-        legalBasis || "근거 법령 없음", // 기본값
-        criteriaAndReferences || "평가기준 없음", // 기본값
-        fileUpload || null, // 파일 업로드는 null 허용
-        answer || "응답 없음", // 기본값
-        additionalComment || "추가 의견 없음", // 기본값
-        feedback || "피드백 없음", // 기본값
-        systemId, // 필수
+      questionId,
+      response,
+      additionalComment,
+      filePath,
+    } of responses) {
+      // "자문 필요"가 아닐 경우 additionalComment를 null로 설정
+      const safeAdditionalComment =
+        response === "자문 필요" ? additionalComment || "자문 요청" : null;
+
+      await connection.query(query, [
+        systemId,
+        user_id,
+        questionId,
+        response,
+        safeAdditionalComment,
+        filePath || null,
       ]);
     }
 
-    res
-      .status(200)
-      .json({ message: "Quantitative responses saved successfully." });
+    await connection.commit();
+    connection.release();
+
+    res.status(200).json({ message: "응답 저장 완료" });
   } catch (error) {
-    console.error("Error saving quantitative responses:", error.message);
-    res
-      .status(500)
-      .json({ message: "Internal server error.", error: error.message });
+    console.error("응답 저장 실패:", error.message);
+    res.status(500).json({ message: "서버 오류 발생", error: error.message });
+  }
+};
+
+// 정량 데이터 조회
+const getQuantitativeQuestions = async (req, res) => {
+  try {
+    const query = `SELECT * FROM quantitative_questions`;
+    const [results] = await pool.query(query);
+    res.status(200).json(results);
+  } catch (error) {
+    console.error("정량 문항 조회 실패:", error);
+    res.status(500).json({ message: "서버 오류 발생" });
+  }
+};
+
+// 정성 데이터 조회
+const getQualitativeQuestions = async (req, res) => {
+  try {
+    const query = `SELECT * FROM qualitative_questions`;
+    const [results] = await pool.query(query);
+    res.status(200).json(results);
+  } catch (error) {
+    console.error("정성 문항 조회 실패:", error);
+    res.status(500).json({ message: "서버 오류 발생" });
   }
 };
 
 // 정성 데이터 저장
-const handleQualitativeSave = async (req, res) => {
-  const {
-    questionNumber,
-    response,
-    additionalComment,
-    systemId,
-    userId,
-    indicator,
-    indicatorDefinition,
-    evaluationCriteria,
-    referenceInfo,
-    filePath,
-  } = req.body;
+const saveQualitativeResponses = async (req, res) => {
+  const { responses } = req.body;
+  const user_id = req.session.user?.id;
 
-  if (!questionNumber || !response || !systemId || !userId) {
-    return res.status(400).json({ message: "필수 필드가 누락되었습니다." });
+  if (!user_id) {
+    return res.status(401).json({ message: "로그인이 필요합니다." });
+  }
+
+  if (!responses || !Array.isArray(responses)) {
+    return res.status(400).json({ message: "Invalid responses format." });
   }
 
   try {
     const query = `
-      INSERT INTO qualitative (
-        question_number, response, additional_comment, system_id, user_id, 
-        indicator, indicator_definition, evaluation_criteria, reference_info, file_path
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE
-        response = VALUES(response),
-        additional_comment = VALUES(additional_comment),
-        indicator = VALUES(indicator),
-        indicator_definition = VALUES(indicator_definition),
-        evaluation_criteria = VALUES(evaluation_criteria),
-        reference_info = VALUES(reference_info),
-        file_path = VALUES(file_path)
+      INSERT INTO qualitative_responses (system_id, user_id, question_id, response, additional_comment, file_path)
+      VALUES (?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE 
+        response = VALUES(response), 
+        additional_comment = CASE 
+          WHEN VALUES(response) = '자문 필요' THEN VALUES(additional_comment) 
+          ELSE NULL 
+        END,
+        file_path = VALUES(file_path);
     `;
 
-    await pool.query(query, [
-      questionNumber,
-      response,
-      additionalComment || "",
+    const connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    for (const {
       systemId,
-      userId,
-      indicator || "",
-      indicatorDefinition || "",
-      evaluationCriteria || "",
-      referenceInfo || "",
-      filePath || null,
-    ]);
-    res.status(200).json({ message: "Response saved successfully." });
+      questionId,
+      response,
+      additionalComment,
+      filePath,
+    } of responses) {
+      // ✅ ENUM 값 검증
+      if (!["자문 필요", "해당없음"].includes(response)) {
+        throw new Error(`Invalid response value: ${response}`);
+      }
+
+      // ✅ "자문 필요"일 경우 `additional_comment` 기본값 설정
+      const safeAdditionalComment =
+        response === "자문 필요"
+          ? additionalComment?.trim() || "자문 요청"
+          : null;
+
+      await connection.query(query, [
+        systemId,
+        user_id,
+        questionId,
+        response,
+        safeAdditionalComment,
+        filePath || null, // ✅ 파일 첨부 필드 유지
+      ]);
+    }
+
+    await connection.commit();
+    connection.release();
+
+    res.status(200).json({ message: "정성 응답 저장 완료" });
   } catch (error) {
-    console.error("Error saving qualitative response:", error.message);
+    console.error("정성 응답 저장 실패:", error.message);
+    res.status(500).json({ message: "서버 오류 발생", error: error.message });
+  }
+};
+
+// 정량 응답 조회
+const getQuantitativeResponses = async (req, res) => {
+  const { systemId, userId } = req.query;
+
+  if (!systemId || !userId) {
+    return res
+      .status(400)
+      .json({ message: "System ID and User ID are required." });
+  }
+
+  try {
+    const query = `
+      SELECT qq.question_number, qq.question, qq.evaluation_criteria, qq.legal_basis, qq.score,
+             qr.response, qr.additional_comment, qr.file_path, qr.feedback
+      FROM quantitative_responses qr
+      JOIN quantitative_questions qq ON qr.question_id = qq.id
+      WHERE qr.system_id = ? AND qr.user_id = ?;
+    `;
+    const [results] = await pool.query(query, [systemId, userId]);
+    res.status(200).json(results);
+  } catch (error) {
+    console.error("Error fetching quantitative responses:", error.message);
     res
       .status(500)
       .json({ message: "Internal server error.", error: error.message });
   }
 };
+// 정성 응답 조회
+const getQualitativeResponses = async (req, res) => {
+  const { systemId, userId } = req.query;
 
-// 정량 데이터 가져오기
-const getQuantitativeData = async (req, res) => {
-  const { systemId } = req.query;
-
-  if (!systemId) {
-    return res.status(400).json({ message: "System ID is required." });
+  if (!systemId || !userId) {
+    return res
+      .status(400)
+      .json({ message: "System ID and User ID are required." });
   }
 
   try {
     const query = `
-      SELECT question_number, unit, evaluation_method, score, question,
-             legal_basis, criteria_and_references, file_upload, response,
-             additional_comment, feedback
-      FROM quantitative
-      WHERE system_id = ?
+      SELECT qq.question_number, qq.indicator, qq.indicator_definition, qq.evaluation_criteria, qq.reference_info,
+             qr.response, qr.additional_comment, qr.file_path, qr.feedback
+      FROM qualitative_responses qr
+      JOIN qualitative_questions qq ON qr.question_id = qq.id
+      WHERE qr.system_id = ? AND qr.user_id = ?;
     `;
-    const [results] = await pool.query(query, [systemId]);
+    const [results] = await pool.query(query, [systemId, userId]);
     res.status(200).json(results);
   } catch (error) {
-    console.error("Error fetching quantitative data:", error.message);
-    res
-      .status(500)
-      .json({ message: "Internal server error.", error: error.message });
-  }
-};
-
-// 정성 데이터 가져오기
-const getQualitativeData = async (req, res) => {
-  const { systemId } = req.query;
-
-  if (!systemId) {
-    return res.status(400).json({ message: "System ID is required." });
-  }
-
-  try {
-    const query = `
-      SELECT question_number, indicator, indicator_definition, evaluation_criteria,
-             reference_info, response, additional_comment, file_path
-      FROM qualitative
-      WHERE system_id = ?
-    `;
-    const [results] = await pool.query(query, [systemId]);
-    res.status(200).json(results);
-  } catch (error) {
-    console.error("Error fetching qualitative data:", error.message);
+    console.error("Error fetching qualitative responses:", error.message);
     res
       .status(500)
       .json({ message: "Internal server error.", error: error.message });
@@ -249,8 +277,10 @@ const getQualitativeData = async (req, res) => {
 
 export {
   handleSelfAssessmentSave,
-  handleQuantitativeSave,
-  handleQualitativeSave,
-  getQuantitativeData,
-  getQualitativeData,
+  saveQuantitativeResponses,
+  saveQualitativeResponses,
+  getQuantitativeQuestions,
+  getQualitativeQuestions,
+  getQuantitativeResponses,
+  getQualitativeResponses,
 };

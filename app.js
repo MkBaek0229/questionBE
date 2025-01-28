@@ -15,11 +15,13 @@ import {
 import { postsystem, getsystems } from "./routes/system.js";
 import { sendVerificationCode, verifyCode } from "./routes/email.js";
 import {
-  handleQuantitativeSave,
-  handleQualitativeSave,
   handleSelfAssessmentSave,
-  getQuantitativeData,
-  getQualitativeData,
+  getQuantitativeQuestions,
+  getQualitativeQuestions,
+  saveQuantitativeResponses,
+  saveQualitativeResponses,
+  getQuantitativeResponses,
+  getQualitativeResponses,
 } from "./routes/selftest.js";
 import {
   completeSelfTest,
@@ -124,11 +126,21 @@ app.get("/systems", requireAuth, getsystems);
 app.get("/all-systems", requireSuperUser, getAllSystems);
 
 // 자기 평가 라우트
-app.post("/selftest/quantitative", requireAuth, handleQuantitativeSave);
-app.post("/selftest/qualitative", requireAuth, handleQualitativeSave);
+app.post("/selftest/quantitative", requireAuth, saveQuantitativeResponses);
+app.post("/selftest/qualitative", requireAuth, saveQualitativeResponses);
 app.post("/selftest", requireAuth, handleSelfAssessmentSave);
-app.get("/selftest/quantitative", requireAuth, getQuantitativeData);
-app.get("/selftest/qualitative", requireAuth, getQualitativeData);
+app.get("/selftest/quantitative", requireAuth, getQuantitativeQuestions);
+app.get("/selftest/qualitative", requireAuth, getQualitativeQuestions);
+app.get(
+  "/selftest/quantitative/responses",
+  requireAuth,
+  getQuantitativeResponses
+);
+app.get(
+  "/selftest/qualitative/responses",
+  requireAuth,
+  getQualitativeResponses
+);
 
 // 평가 결과 라우트
 app.post("/assessment/complete", requireAuth, completeSelfTest);

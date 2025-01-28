@@ -4,8 +4,9 @@ import pool from "../db/connection.js";
 const calculateAssessmentScore = async (systemId) => {
   console.log("Calculating score for systemId:", systemId);
 
-  const queryQuantitative = `SELECT response FROM quantitative WHERE system_id = ?`;
-  const queryQualitative = `SELECT response FROM qualitative WHERE system_id = ?`;
+  // ✅ 변경된 테이블 구조 반영
+  const queryQuantitative = `SELECT response FROM quantitative_responses WHERE system_id = ?`;
+  const queryQualitative = `SELECT response FROM qualitative_responses WHERE system_id = ?`;
 
   try {
     const [quantitativeResults] = await pool.query(queryQuantitative, [
@@ -18,11 +19,13 @@ const calculateAssessmentScore = async (systemId) => {
 
     let score = 0;
 
+    // ✅ 정량 평가 점수 계산
     quantitativeResults.forEach((item) => {
       if (item.response === "이행") score += 1;
       else if (item.response === "자문 필요") score += 0.3;
     });
 
+    // ✅ 정성 평가 점수 계산
     qualitativeResults.forEach((item) => {
       if (item.response === "자문필요") score += 0.3;
     });
