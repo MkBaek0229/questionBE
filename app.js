@@ -18,10 +18,12 @@ import {
   handleSelfAssessmentSave,
   getQuantitativeQuestions,
   getQualitativeQuestions,
-  saveQuantitativeResponses,
-  saveQualitativeResponses,
+  submitQuantitativeResponses,
+  submitQualitativeResponses,
   getQuantitativeResponses,
   getQualitativeResponses,
+  updateQuantitativeQuestion,
+  updateQualitativeQuestion,
 } from "./routes/selftest.js";
 import {
   completeSelfTest,
@@ -31,11 +33,12 @@ import {
 import {
   getAssignedSystems,
   getSystemAssessmentResult,
-  updateQualitativeFeedback,
-  updateQuantitativeFeedback,
+  submitQuantitativeFeedback,
+  submitQualitativeFeedback,
   SystemsResult,
   updateFeedbackStatus,
   getSystemOwner,
+  getFeedbacks,
 } from "./routes/feedback.js";
 import {
   loginSuperUser,
@@ -125,9 +128,9 @@ app.post("/systems", requireAuth, postsystem);
 app.get("/systems", requireAuth, getsystems);
 app.get("/all-systems", requireSuperUser, getAllSystems);
 
-// 자기 평가 라우트
-app.post("/selftest/quantitative", requireAuth, saveQuantitativeResponses);
-app.post("/selftest/qualitative", requireAuth, saveQualitativeResponses);
+// 자가진단(자가평가) 라우트
+app.post("/selftest/quantitative", requireAuth, submitQuantitativeResponses);
+app.post("/selftest/qualitative", requireAuth, submitQualitativeResponses);
 app.post("/selftest", requireAuth, handleSelfAssessmentSave);
 app.get("/selftest/quantitative", requireAuth, getQuantitativeQuestions);
 app.get("/selftest/qualitative", requireAuth, getQualitativeQuestions);
@@ -141,6 +144,8 @@ app.get(
   requireAuth,
   getQualitativeResponses
 );
+app.put("/update-quantitative", updateQuantitativeQuestion);
+app.put("/update-qualitative", updateQualitativeQuestion);
 
 // 평가 결과 라우트
 app.post("/assessment/complete", requireAuth, completeSelfTest);
@@ -157,19 +162,19 @@ app.get("/system-owner", getSystemOwner);
 app.post(
   "/selftest/quantitative/feedback",
   requireAuth,
-  updateQuantitativeFeedback
+  submitQuantitativeFeedback
 );
 app.post(
   "/selftest/qualitative/feedback",
   requireAuth,
-  updateQualitativeFeedback
+  submitQualitativeFeedback
 );
 app.post(
   "/selftest/qualitative/update-status",
   requireAuth,
   updateFeedbackStatus
 );
-
+app.get("/selftest/feedback", requireAuth, getFeedbacks);
 // 에러 처리 미들웨어
 app.use((err, req, res, next) => {
   console.error(`서버 에러 발생 [${req.method} ${req.path}]:`, err);

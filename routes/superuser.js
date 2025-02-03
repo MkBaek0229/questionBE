@@ -179,7 +179,7 @@ const getMatchedExperts = async (req, res) => {
 const getAllSystems = async (req, res) => {
   try {
     const query = `
-      SELECT s.id AS system_id, s.name AS system_name, u.institution_name, u.email AS user_email
+      SELECT s.id AS systems_id, s.name AS system_name, u.institution_name, u.email AS user_email
       FROM systems s
       JOIN User u ON s.user_id = u.id;
     `;
