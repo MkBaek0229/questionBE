@@ -86,12 +86,13 @@ const getsystems = async (req, res) => {
           systems.name AS system_name,
           systems.purpose,
           systems.assessment_status,
+          systems.user_id,  -- ✅ user_id 추가
           User.institution_name,
           User.representative_name
-         FROM systems
-         INNER JOIN User ON systems.user_id = User.id
-         WHERE systems.user_id = ?
-         ORDER BY systems.created_at DESC`,
+       FROM systems
+       INNER JOIN User ON systems.user_id = User.id
+       WHERE systems.user_id = ?
+       ORDER BY systems.created_at DESC`,
       [user_id]
     );
 
@@ -168,25 +169,52 @@ const updateSystem = async (req, res) => {
 
 // 시스템 삭제
 const deleteSystem = async (req, res) => {
+  console.log("🔍 [DEBUG] DELETE 요청 수신됨, 시스템 ID:", req.params.id);
+
+  if (!req.user) {
+    return res.status(401).json({ message: "사용자 인증이 필요합니다." });
+  }
+
   const { id } = req.params;
+  const userId = req.user.id; // 로그인한 사용자 ID
 
   try {
-    const [result] = await pool.query(
-      `DELETE FROM systems
-       WHERE id = ?`,
+    // 🔹 기존 SQL: owner_id → user_id로 변경
+    const [[system]] = await pool.query(
+      "SELECT user_id FROM systems WHERE id = ?",
       [id]
     );
 
-    if (result.affectedRows === 0) {
+    if (!system) {
+      console.log("🚨 [ERROR] 시스템을 찾을 수 없습니다.");
       return res.status(404).json({ message: "시스템을 찾을 수 없습니다." });
     }
 
+    console.log("🔍 [DEBUG] 시스템 데이터:", system);
+
+    // ✅ 소유자 확인
+    if (system.user_id !== userId) {
+      // 🔹 owner_id → user_id 변경
+      console.log(
+        "🚨 [ERROR] 삭제 권한 없음! 요청자:",
+        userId,
+        " 소유자:",
+        system.user_id
+      );
+      return res.status(403).json({ message: "삭제 권한이 없습니다." });
+    }
+
+    // ✅ 시스템 삭제 실행
+    await pool.query("DELETE FROM systems WHERE id = ?", [id]);
+
+    console.log("✅ [DEBUG] 시스템 삭제 완료");
     res.status(200).json({ message: "시스템이 성공적으로 삭제되었습니다." });
   } catch (err) {
-    console.error("❌ [DB] 시스템 삭제 실패:", err);
+    console.error("❌ 시스템 삭제 오류:", err);
     res.status(500).json({ message: "시스템 삭제 중 오류가 발생했습니다." });
   }
 };
+
 const getAllSystems = async (req, res) => {
   try {
     const [systems] = await pool.query(

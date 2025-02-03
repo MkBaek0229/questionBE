@@ -137,7 +137,20 @@ const submitQualitativeFeedback = async (req, res) => {
     const connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    for (const { questionNumber, feedback } of feedbackResponses) {
+    for (const { questionNumber, feedback, userId } of feedbackResponses) {
+      // user_id 값이 User 테이블에 존재하는지 확인
+      const [userResult] = await connection.query(
+        `SELECT id FROM User WHERE id = ?`,
+        [userId]
+      );
+
+      if (userResult.length === 0) {
+        console.warn(
+          `⚠️ [피드백 저장 실패] user_id ${userId}가 존재하지 않습니다.`
+        );
+        continue;
+      }
+
       // ✅ 정성 응답 ID 가져오기
       const [responseResult] = await connection.query(
         `SELECT id FROM qualitative_responses 
@@ -157,7 +170,7 @@ const submitQualitativeFeedback = async (req, res) => {
       await connection.query(
         `INSERT INTO feedback (systems_id, user_id, expert_id, qualitative_response_id, feedback, created_at)
          VALUES (?, ?, ?, ?, ?, NOW())`,
-        [systemId, expertId, expertId, qualitativeResponseId, feedback]
+        [systemId, userId, expertId, qualitativeResponseId, feedback]
       );
     }
 

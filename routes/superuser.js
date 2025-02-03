@@ -39,7 +39,7 @@ const loginSuperUser = async (req, res) => {
       id: superuser.id,
       email: superuser.email,
       name: superuser.name,
-      member_type: superuser.member_type,
+      member_type: "superuser",
     };
 
     res.status(200).json({
@@ -200,10 +200,48 @@ const getAllSystems = async (req, res) => {
     });
   }
 };
+// 🔹 모든 관리자(전문가) 데이터 가져오기
+const getAllExperts = async (req, res) => {
+  console.log("🔍 [DEBUG] 현재 로그인한 사용자:", req.session.superuser);
+
+  if (!req.session?.superuser) {
+    return res.status(401).json({ message: "슈퍼유저 인증이 필요합니다." });
+  }
+
+  try {
+    const [experts] = await pool.query(
+      `SELECT 
+          id AS expert_id,
+          name AS expert_name,
+          institution_name,
+          ofcps AS position,
+          phone_number,
+          email,
+          major_carrea AS major_experience
+       FROM expert
+       ORDER BY id ASC`
+    );
+
+    console.log("✅ [DB] 모든 관리자 데이터 조회 성공:", experts);
+    res.status(200).json({
+      resultCode: "S-1",
+      msg: "모든 관리자 데이터를 성공적으로 가져왔습니다.",
+      data: experts,
+    });
+  } catch (error) {
+    console.error("❌ [DB] 모든 관리자 데이터 조회 실패:", error);
+    res.status(500).json({
+      resultCode: "F-1",
+      msg: "관리자 데이터 조회 중 오류가 발생했습니다.",
+      error: error.message,
+    });
+  }
+};
 
 export {
   getAllSystems,
   getMatchedExperts,
   loginSuperUser,
   matchExpertsToSystem,
+  getAllExperts,
 };

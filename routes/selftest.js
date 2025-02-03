@@ -78,12 +78,14 @@ const submitQuantitativeResponses = async (req, res) => {
   if (!user_id) {
     return res.status(401).json({ message: "로그인이 필요합니다." });
   }
+
   if (!responses || !Array.isArray(responses)) {
     return res.status(400).json({ message: "Invalid responses format." });
   }
 
   try {
     console.log("📡 [DEBUG] 수신된 정량 응답 데이터:", responses);
+
     const query = `
       INSERT INTO quantitative_responses (systems_id, user_id, question_id, response, additional_comment, file_path)
       VALUES (?, ?, ?, ?, ?, ?)
@@ -95,6 +97,7 @@ const submitQuantitativeResponses = async (req, res) => {
 
     const connection = await pool.getConnection();
     await connection.beginTransaction();
+
     for (const {
       systemId,
       questionId,
@@ -109,9 +112,11 @@ const submitQuantitativeResponses = async (req, res) => {
         normalizedResponse === "자문필요"
           ? additionalComment?.trim() || "자문 요청"
           : "";
+
       console.log(
         `📡 [DEBUG] 저장할 데이터 → systemId: ${systemId}, userId: ${user_id}, questionId: ${questionId}, response: ${normalizedResponse}, additionalComment: ${safeAdditionalComment}, filePath: ${filePath}`
       );
+
       await connection.query(query, [
         systemId,
         user_id,
@@ -124,6 +129,7 @@ const submitQuantitativeResponses = async (req, res) => {
 
     await connection.commit();
     connection.release();
+
     res.status(200).json({ message: "정량 응답 저장 완료" });
   } catch (error) {
     console.error("❌ [ERROR] 정량 응답 저장 실패:", error.message);
@@ -144,19 +150,22 @@ const getQuantitativeQuestions = async (req, res) => {
   }
 };
 
-// 정성 데이터 조회
 // 정성 데이터 조회 (특정 시스템 ID 기준)
 const getQualitativeQuestions = async (req, res) => {
   try {
     console.log("📡 [DEBUG] GET /selftest/qualitative 요청 수신");
+
     // SQL 실행 전 디버깅
     const query = `SELECT * FROM qualitative_questions`;
     console.log("📡 [DEBUG] 실행할 SQL 쿼리:", query);
+
     const [results] = await pool.query(query);
+
     if (results.length === 0) {
       console.warn("⚠️ 정성 문항 데이터가 없습니다.");
       return res.status(404).json({ message: "정성 문항이 없습니다." });
     }
+
     console.log("✅ [DEBUG] 조회된 데이터:", results);
     res.status(200).json(results);
   } catch (error) {
@@ -164,19 +173,23 @@ const getQualitativeQuestions = async (req, res) => {
     res.status(500).json({ message: "서버 오류 발생", error: error.message });
   }
 };
+
 // 정성 데이터 저장
 const submitQualitativeResponses = async (req, res) => {
   const { responses } = req.body;
   const user_id = req.session.user?.id;
+
   if (!user_id) {
     return res.status(401).json({ message: "로그인이 필요합니다." });
   }
+
   if (!responses || !Array.isArray(responses)) {
     return res.status(400).json({ message: "Invalid responses format." });
   }
 
   try {
     console.log("📡 [DEBUG] Received qualitative responses:", responses);
+
     const query = `
       INSERT INTO qualitative_responses 
       (systems_id, user_id, question_id, response, additional_comment, file_path)
@@ -192,6 +205,7 @@ const submitQualitativeResponses = async (req, res) => {
 
     const connection = await pool.getConnection();
     await connection.beginTransaction();
+
     for (const {
       systemId,
       questionId,
@@ -200,15 +214,23 @@ const submitQualitativeResponses = async (req, res) => {
       filePath,
     } of responses) {
       // 🚨 response 값이 ENUM에 맞게 변환 필요
-      const normalizedResponse = response.replace(/\s+/g, ""); // 모든 공백 제거
+      const normalizedResponse = response.trim().replace(/\s+/g, ""); // 공백 제거
       if (!["자문필요", "해당없음"].includes(normalizedResponse)) {
-        console.error(`❌ [ERROR] Invalid response value: ${response}`);
-        throw new Error(`Invalid response value: ${response}`);
+        console.error(
+          `❌ [ERROR] Invalid response value: '${response}' (normalized: '${normalizedResponse}')`
+        );
+        throw new Error(`Invalid response value: '${response}'`);
       }
+
       const safeAdditionalComment =
         normalizedResponse === "자문필요"
           ? additionalComment?.trim() || "자문요청"
           : null;
+
+      console.log(
+        `🟢 [DEBUG] 저장 시도 → systemId: ${systemId}, userId: ${user_id}, questionId: ${questionId}, response: '${normalizedResponse}', additionalComment: '${safeAdditionalComment}', filePath: ${filePath}`
+      );
+
       await connection.query(query, [
         systemId,
         user_id,
@@ -217,10 +239,12 @@ const submitQualitativeResponses = async (req, res) => {
         safeAdditionalComment,
         filePath || null,
       ]);
+
+      console.log("✅ [SUCCESS] 정성 응답 저장 완료:", questionId);
     }
 
     await connection.commit();
-    connection.release();
+    console.log("✅ [SUCCESS] 정성 응답 저장 완료");
     res.status(200).json({ message: "정성 응답 저장 완료" });
   } catch (error) {
     console.error("❌ [ERROR] 정성 응답 저장 실패:", error.message);
@@ -228,6 +252,7 @@ const submitQualitativeResponses = async (req, res) => {
   }
 };
 
+// 정량 응답 조회
 // 정량 응답 조회
 const getQuantitativeResponses = async (req, res) => {
   const { systemId, userId } = req.query;
@@ -240,7 +265,7 @@ const getQuantitativeResponses = async (req, res) => {
 
   try {
     const query = `
-            SELECT 
+      SELECT 
         qq.question_number, 
         qq.question, 
         qq.evaluation_criteria, 
@@ -253,16 +278,18 @@ const getQuantitativeResponses = async (req, res) => {
       JOIN quantitative_questions qq ON qr.question_id = qq.id
       WHERE qr.systems_id = ? AND qr.user_id = ?;
     `;
+
     const [results] = await pool.query(query, [systemId, userId]);
+
     console.log("📡 [DEBUG] 정량 응답 조회 결과:", results);
+
     res.status(200).json(results);
   } catch (error) {
     console.error("❌ [ERROR] 정량 응답 조회 실패:", error.message);
     res.status(500).json({ message: "서버 오류 발생", error: error.message });
   }
 };
-// 정성 응답 조회
-// 정성 응답 조회
+
 const getQualitativeResponses = async (req, res) => {
   const { systemId, userId } = req.query;
 
@@ -288,11 +315,14 @@ const getQualitativeResponses = async (req, res) => {
       WHERE qr.systems_id = ? AND qr.user_id = ?;
     `;
     const [results] = await pool.query(query, [systemId, userId]);
+
     console.log("📡 [DEBUG] 정성 응답 조회 결과:", results);
+
     if (results.length === 0) {
       console.warn("⚠️ [WARNING] 정성 응답이 존재하지 않습니다.");
       return res.status(404).json({ message: "정성 응답이 없습니다." });
     }
+
     res.status(200).json(results);
   } catch (error) {
     console.error("❌ [ERROR] 정성 응답 조회 실패:", error.message);
@@ -303,17 +333,20 @@ const getQualitativeResponses = async (req, res) => {
 const updateQuantitativeQuestion = async (req, res) => {
   const { questionId, question, evaluationCriteria, legalBasis, score } =
     req.body;
+
   if (!questionId || !question || !evaluationCriteria || !score) {
     return res
       .status(400)
       .json({ message: "필수 입력 항목이 누락되었습니다." });
   }
+
   try {
     const query = `
       UPDATE quantitative_questions
       SET question = ?, evaluation_criteria = ?, legal_basis = ?, score = ?
       WHERE id = ?;
     `;
+
     const [result] = await pool.query(query, [
       question,
       evaluationCriteria,
@@ -321,18 +354,19 @@ const updateQuantitativeQuestion = async (req, res) => {
       score,
       questionId,
     ]);
+
     if (result.affectedRows === 0) {
       return res.status(404).json({
         message: "해당 정량 문항을 찾을 수 없습니다.",
       });
     }
+
     res.status(200).json({ message: "정량 문항 업데이트 성공" });
   } catch (error) {
     console.error("❌ [ERROR] 정량 문항 업데이트 실패:", error.message);
     res.status(500).json({ message: "서버 오류 발생", error: error.message });
   }
 };
-
 /**
  * ✅ 정성 문항 업데이트
  */
@@ -344,17 +378,20 @@ const updateQualitativeQuestion = async (req, res) => {
     evaluationCriteria,
     referenceInfo,
   } = req.body;
+
   if (!questionId || !indicator || !evaluationCriteria) {
     return res
       .status(400)
       .json({ message: "필수 입력 항목이 누락되었습니다." });
   }
+
   try {
     const query = `
       UPDATE qualitative_questions
       SET indicator = ?, indicator_definition = ?, evaluation_criteria = ?, reference_info = ?
       WHERE id = ?;
     `;
+
     const [result] = await pool.query(query, [
       indicator,
       indicatorDefinition || null,
@@ -362,18 +399,19 @@ const updateQualitativeQuestion = async (req, res) => {
       referenceInfo || null,
       questionId,
     ]);
+
     if (result.affectedRows === 0) {
       return res.status(404).json({
         message: "해당 정성 문항을 찾을 수 없습니다.",
       });
     }
+
     res.status(200).json({ message: "정성 문항 업데이트 성공" });
   } catch (error) {
     console.error("❌ [ERROR] 정성 문항 업데이트 실패:", error.message);
     res.status(500).json({ message: "서버 오류 발생", error: error.message });
   }
 };
-
 export {
   handleSelfAssessmentSave,
   submitQuantitativeResponses,
