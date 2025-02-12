@@ -22,7 +22,7 @@ const calculateAssessmentScore = async (systemId) => {
     // ✅ 정량 평가 점수 계산
     quantitativeResults.forEach((item) => {
       if (item.response === "이행") score += 1;
-      else if (item.response === "자문 필요") score += 0.3;
+      else if (item.response === "자문필요") score += 0.3;
     });
 
     // ✅ 정성 평가 점수 계산
@@ -80,14 +80,15 @@ const completeSelfTest = async (req, res) => {
 
     // ✅ 3️⃣ `assessment_id` 포함하여 결과 저장
     const query = `
-    INSERT INTO assessment_result (systems_id, user_id, assessment_id, score, feedback_status, completed_at, grade)
-    VALUES (?, ?, ?, ?, '전문가 자문이 반영되기전입니다', NOW(), ?)
-    ON DUPLICATE KEY UPDATE
-    score = VALUES(score),
-    feedback_status = VALUES(feedback_status),
-    completed_at = VALUES(completed_at),
-    grade = VALUES(grade);
-   `;
+     INSERT INTO assessment_result (systems_id, user_id, assessment_id, score, feedback_status, completed_at, grade)
+     VALUES (?, ?, ?, ?, '전문가 자문이 반영되기전입니다', NOW(), ?)
+     ON DUPLICATE KEY UPDATE
+     score = VALUES(score),
+     feedback_status = VALUES(feedback_status),
+     completed_at = VALUES(completed_at),
+     grade = VALUES(grade);
+
+    `;
     const values = [systemId, userId, assessmentId, score, grade];
     console.log("Executing query:", query, "with values:", values);
 

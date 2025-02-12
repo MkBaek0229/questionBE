@@ -29,14 +29,19 @@ const registerExpert = async (req, res) => {
       .status(400)
       .json({ resultCode: "F-1", msg: "필수 입력 값이 누락되었습니다." });
   }
+  const connection = await pool.getConnection(); // ✅ 트랜잭션을 위한 DB 연결
 
   try {
+    await connection.beginTransaction(); // ✅ 트랜잭션 시작
+    console.log("⏳ 전문가 회원가입 진행 중...");
+
     // 이메일 중복 확인
     const [existingUser] = await pool.query(
       "SELECT * FROM expert WHERE email = ?",
       [email]
     );
     if (existingUser.length > 0) {
+      await connection.rollback(); // 🚨 중복 이메일이면 롤백
       return res
         .status(400)
         .json({ resultCode: "F-2", msg: "이미 가입된 이메일입니다." });
@@ -63,10 +68,13 @@ const registerExpert = async (req, res) => {
       [email]
     );
 
+    await connection.commit(); // ✅ 모든 작업 완료 후 커밋
+    console.log("✅ 전문가 회원가입 완료!");
     res
       .status(201)
       .json({ resultCode: "S-1", msg: "회원가입 성공", data: newUser[0] });
   } catch (error) {
+    await connection.rollback(); // 🚨 실패 시 롤백
     console.error("회원가입 오류:", error);
     res
       .status(500)
@@ -151,6 +159,43 @@ const getExpertInfo = (req, res) => {
   }
   res.status(200).json({ resultCode: "S-1", expert: req.session.expert });
 };
+// 🔹 모든 관리자(전문가) 데이터 가져오기
+const getAllExperts = async (req, res) => {
+  try {
+    const [experts] = await pool.query(
+      `SELECT 
+          id AS expert_id,
+          name AS expert_name,
+          institution_name,
+          ofcps AS position,
+          phone_number,
+          email,
+          major_carrea AS major_experience
+       FROM expert
+       ORDER BY id ASC`
+    );
 
-export { registerExpert, loginExpert, logoutExpert, getExpertInfo };
+    console.log("✅ [DB] 모든 관리자 데이터 조회 성공:", experts);
+    res.status(200).json({
+      resultCode: "S-1",
+      msg: "모든 관리자 데이터를 성공적으로 가져왔습니다.",
+      data: experts,
+    });
+  } catch (error) {
+    console.error("❌ [DB] 모든 관리자 데이터 조회 실패:", error);
+    res.status(500).json({
+      resultCode: "F-1",
+      msg: "관리자 데이터 조회 중 오류가 발생했습니다.",
+      error: error.message,
+    });
+  }
+};
+
+export {
+  registerExpert,
+  loginExpert,
+  logoutExpert,
+  getExpertInfo,
+  getAllExperts,
+};
 export default router;

@@ -12,19 +12,24 @@ const register = async (req, res) => {
     phone_number,
   } = req.body;
 
-  console.log("📩 받은 데이터:", req.body); // ✅ 디버깅 로그 추가
+  console.log("📩 받은 데이터:", req.body);
+  const connection = await pool.getConnection(); // ✅ 트랜잭션 시작을 위해 DB 커넥션 가져오기
 
   try {
-    const [existingUser] = await pool.query(
+    await connection.beginTransaction(); // ✅ 트랜잭션 시작
+
+    const [existingUser] = await connection.query(
       "SELECT * FROM User WHERE email = ?",
       [email]
     );
     if (existingUser.length > 0) {
-      return res.status(400).json({ message: "이미 사용 중인 이메일입니다." });
+      throw new Error("이미 사용 중인 이메일입니다.");
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await pool.query(
+
+    console.log("🚀 INSERT 실행 시작!");
+    await connection.query(
       `INSERT INTO User (institution_name, institution_address, representative_name, email, password, phone_number)
         VALUES (?, ?, ?, ?, ?, ?)`,
       [
@@ -36,14 +41,17 @@ const register = async (req, res) => {
         phone_number,
       ]
     );
-
+    await connection.commit(); // ✅ 모든 작업이 성공하면 커밋!
+    console.log("✅ 회원가입 완료!");
     res.status(201).json({ message: "회원가입 성공!" });
   } catch (err) {
-    console.error("회원가입 실패:", err); // 오류 로그 추가
+    await connection.rollback(); // 🚨 실패하면 ROLLBACK!
+    console.error("회원가입 실패, 롤백됨:", err);
     res.status(500).json({ message: "회원가입 실패", error: err.message });
+  } finally {
+    connection.release(); // ✅ 연결 반환
   }
 };
-
 // 로그인
 const login = async (req, res) => {
   const { email, password } = req.body;

@@ -4,12 +4,15 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
+import rateLimit from "express-rate-limit";
+
 import { register, login, logout, getUserInfo } from "./routes/auth.js";
 import {
   registerExpert,
   loginExpert,
   logoutExpert,
   getExpertInfo,
+  getAllExperts,
 } from "./routes/expert.js";
 import { postsystem, getsystems, deleteSystem } from "./routes/system.js";
 import { sendVerificationCode, verifyCode } from "./routes/email.js";
@@ -44,7 +47,19 @@ import {
   matchExpertsToSystem,
   getMatchedExperts,
   getAllSystems,
-  getAllExperts,
+  logoutSuperUser,
+  deleteSystemBySuperUser,
+  SupergetQuantitativeQuestions,
+  SupergetQualitativeQuestions,
+  SupergetQuantitativeResponses,
+  SupergetQualitativeResponses,
+  getSystemById,
+  addQuantitativeQuestion,
+  editQuantitativeQuestion,
+  deleteQuantitativeQuestion,
+  addQualitativeQuestion,
+  editQualitativeQuestion,
+  deleteQualitativeQuestion,
 } from "./routes/superuser.js";
 
 dotenv.config();
@@ -74,38 +89,20 @@ app.use(
     cookie: {
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,
-      maxAge: 3600000, // 1시간
+      maxAge: null,
+      //maxAge: 3600000, // 1시간
     },
   })
 );
 
-// ✅ 기관 회원 인증 미들웨어
+// ✅ 인증 미들웨어
 const requireAuth = (req, res, next) => {
-  console.log("🔍 [DEBUG] req.session:", req.session); // 세션 정보 확인
-
-  if (!req.session?.user) {
+  if (
+    !req.session ||
+    (!req.session.user && !req.session.expert && !req.session.superuser)
+  ) {
     return res.status(401).json({ message: "로그인이 필요합니다." });
   }
-
-  // ✅ req.user에 user 정보 저장
-  req.user = req.session.user;
-  console.log("✅ [DEBUG] req.user 설정 완료:", req.user);
-
-  next();
-};
-
-// ✅ 전문가 회원 인증 미들웨어
-const requireExpertAuth = (req, res, next) => {
-  console.log("🔍 [DEBUG] req.session:", req.session); // 세션 정보 확인
-
-  if (!req.session?.expert) {
-    return res.status(401).json({ message: "전문가 로그인이 필요합니다." });
-  }
-
-  // ✅ req.user에 expert 정보 저장
-  req.user = req.session.expert;
-  console.log("✅ [DEBUG] req.user 설정 완료:", req.user);
-
   next();
 };
 
@@ -117,25 +114,78 @@ const requireSuperUser = (req, res, next) => {
   next();
 };
 
+// ✅ 이메일 전송 제한 설정
+const emailLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1분
+  max: 7, // 1분 동안 7번만 요청 가능
+  message: "1분 후 다시 시도하세요.",
+});
+// ✅ 회원가입 요청 제한 설정
+const registerLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1분
+  max: 8, // 1분 동안 8번만 요청 가능
+  message: "1분 후 다시 시도하세요.",
+});
+
+// ✅ 로그인 요청 제한 설정
+const loginLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1분
+  max: 10, // 1분 동안 10번만 요청 가능
+  message: "1분 후 다시 시도하세요.",
+});
+
 // ✅ 기관회원 라우트
-app.post("/register", register);
-app.post("/login", login);
+app.post("/register", registerLimiter, register);
+app.post("/login", loginLimiter, login);
 app.post("/logout", logout);
 app.get("/user", requireAuth, getUserInfo);
 
 // ✅ 전문가 회원 라우트
-app.post("/register/expert", registerExpert);
-app.post("/login/expert", loginExpert);
+app.post("/register/expert", registerLimiter, registerExpert);
+app.post("/login/expert", loginLimiter, loginExpert);
 app.post("/logout/expert", logoutExpert);
-app.get("/expert", requireExpertAuth, getExpertInfo);
+app.get("/expert", requireAuth, getExpertInfo);
+app.get("/all-expert", requireAuth, getAllExperts);
 
 // ✅ 슈퍼유저 라우트
 app.post("/login/superuser", loginSuperUser);
 app.post("/match-experts", requireSuperUser, matchExpertsToSystem);
 app.get("/matched-experts", requireSuperUser, getMatchedExperts);
-app.get("/all-expert", requireSuperUser, getAllExperts);
+app.post("/logout/SuperUser", requireSuperUser, logoutSuperUser);
+app.delete("/system/superuser/:id", requireSuperUser, deleteSystemBySuperUser);
+app.get("/system/:id", requireSuperUser, getSystemById);
+app.get(
+  "/super/selftest/quantitative/systemId/:id",
+  requireSuperUser,
+  SupergetQuantitativeQuestions
+);
+app.get(
+  "/super/selftest/qualitative/systemId/:id",
+  requireSuperUser,
+  SupergetQualitativeQuestions
+);
+app.get(
+  "/super/selftest/quantitative/responses/systemId/:id",
+  requireSuperUser,
+  SupergetQuantitativeResponses
+);
+app.get(
+  "/super/selftest/qualitative/responses/systemId/:id",
+  requireSuperUser,
+  SupergetQualitativeResponses
+);
+
+// 정량 문항 API
+app.post("/selftest/quantitative", addQuantitativeQuestion);
+app.put("/selftest/quantitative/:id", editQuantitativeQuestion);
+app.delete("/selftest/quantitative/:id", deleteQuantitativeQuestion);
+// 정성 문항 API
+app.post("/selftest/qualitative", addQualitativeQuestion);
+app.put("/selftest/qualitative/:id", editQualitativeQuestion);
+app.delete("/selftest/qualitative/:id", deleteQualitativeQuestion);
+
 // ✅ 이메일 인증 라우트
-app.post("/email/send-verification-code", sendVerificationCode);
+app.post("/email/send-verification-code", emailLimiter, sendVerificationCode);
 app.post("/email/verify-code", verifyCode);
 
 // ✅ 시스템 라우트
@@ -148,48 +198,48 @@ app.delete("/system/:id", requireAuth, deleteSystem);
 app.post("/selftest/quantitative", requireAuth, submitQuantitativeResponses);
 app.post("/selftest/qualitative", requireAuth, submitQualitativeResponses);
 app.post("/selftest", requireAuth, handleSelfAssessmentSave);
-app.get("/selftest/quantitative", getQuantitativeQuestions);
-app.get("/selftest/qualitative", getQualitativeQuestions);
+app.get("/selftest/quantitative", requireAuth, getQuantitativeQuestions);
+app.get("/selftest/qualitative", requireAuth, getQualitativeQuestions);
 app.get(
   "/selftest/quantitative/responses",
-
+  requireAuth,
   getQuantitativeResponses
 );
 app.get(
   "/selftest/qualitative/responses",
-
+  requireAuth,
   getQualitativeResponses
 );
 app.put("/update-quantitative", updateQuantitativeQuestion);
 app.put("/update-qualitative", updateQualitativeQuestion);
 // ✅ 평가 결과 라우트
-app.post("/assessment/complete", requireExpertAuth, completeSelfTest);
-app.get("/assessment/result", requireExpertAuth, getAssessmentResults);
-app.get("/assessment/status", requireExpertAuth, getAssessmentStatuses);
+app.post("/assessment/complete", requireAuth, completeSelfTest);
+app.get("/assessment/result", requireAuth, getAssessmentResults);
+app.get("/assessment/status", requireAuth, getAssessmentStatuses);
 
 // ✅ 전문가 관련 라우트
-app.get("/assigned-systems", requireExpertAuth, getAssignedSystems);
-app.get("/system-result", requireExpertAuth, getSystemAssessmentResult);
-app.get("/systems-results", requireExpertAuth, SystemsResult);
+app.get("/assigned-systems", requireAuth, getAssignedSystems);
+app.get("/system-result", requireAuth, getSystemAssessmentResult);
+app.get("/systems-results", requireAuth, SystemsResult);
 app.get("/system-owner", getSystemOwner);
 
 // ✅ 피드백 라우트
 app.post(
   "/selftest/quantitative/feedback",
-  requireExpertAuth,
+  requireAuth,
   submitQuantitativeFeedback
 );
 app.post(
   "/selftest/qualitative/feedback",
-  requireExpertAuth,
+  requireAuth,
   submitQualitativeFeedback
 );
 app.post(
   "/selftest/qualitative/update-status",
-  requireExpertAuth,
+  requireAuth,
   updateFeedbackStatus
 );
-app.get("/selftest/feedback", requireExpertAuth, getFeedbacks);
+app.get("/selftest/feedback", requireAuth, getFeedbacks);
 
 // ✅ 에러 처리 미들웨어
 app.use((err, req, res, next) => {

@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import pool from "../db/connection.js"; // DB 연결 파일
+import redisClint from "../db/redisClient.js"; // Redis 연결 파일
 
 dotenv.config();
 
@@ -17,9 +18,6 @@ const transporter = nodemailer.createTransport({
 const generateCode = () => {
   return Math.floor(100000 + Math.random() * 900000).toString(); // 6자리 숫자
 };
-
-// 임시 저장소 (실제 사용 시 Redis 권장)
-const tempStorage = {};
 
 // 이메일 형식 검증 함수
 const validateEmail = (email) => {
@@ -51,31 +49,23 @@ const sendVerificationCode = async (req, res) => {
       return res.status(400).json({ message: "이미 사용 중인 이메일입니다." });
     }
 
-    // 요청 제한: 1분 내 3회 이상 요청 방지
-    if (!tempStorage[email]) {
-      tempStorage[email] = { requestCount: 0, lastRequestTime: Date.now() };
-    }
-    const elapsedTime = Date.now() - tempStorage[email].lastRequestTime;
-    if (elapsedTime < 60 * 1000) {
-      // 1분 이내 요청
-      if (tempStorage[email].requestCount >= 3) {
-        return res
-          .status(429)
-          .json({ message: "너무 많은 요청입니다. 1분 후 다시 시도하세요." });
-      }
-      tempStorage[email].requestCount++;
-    } else {
-      // 1분이 지나면 요청 횟수 초기화
-      tempStorage[email].requestCount = 1;
-      tempStorage[email].lastRequestTime = Date.now();
+    const requestKey = `request_count:${email}`;
+    const requestCount = await redisClint.incr(requestKey); // 요청 횟수 증가
+
+    if (requestCount === 1) {
+      await redisClint.expire(requestKey, 60); // 최초 요청 시 1분 TTL 설정
+    } else if (requestCount > 3) {
+      return res
+        .status(429)
+        .json({ message: "너무 많은 요청입니다. 1분 후 다시 시도하세요." });
     }
 
     const code = generateCode();
-    const expiration = Date.now() + 10 * 60 * 1000; // 10분 유효
+    const expiration = 10 * 60; // 10분 유효
 
-    // 임시 저장소에 저장
-    tempStorage[email] = { code, expiration };
+    const redisKey = `verification_code:${email}`;
 
+    await redisClint.set(redisKey, JSON.stringify({ code }, "EX", expiration));
     // 이메일 내용
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -86,7 +76,10 @@ const sendVerificationCode = async (req, res) => {
 
     // 이메일 전송
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: "인증 코드가 전송되었습니다." });
+
+    res
+      .status(200)
+      .json({ message: "인증 코드가 전송되었습니다.", data: code });
   } catch (error) {
     console.error("인증 코드 전송 실패:", error.message);
     res
@@ -96,7 +89,7 @@ const sendVerificationCode = async (req, res) => {
 };
 
 // 인증 코드 검증
-const verifyCode = (req, res) => {
+const verifyCode = async (req, res) => {
   const { email, code } = req.body;
 
   if (!email || !code) {
@@ -106,41 +99,58 @@ const verifyCode = (req, res) => {
   }
 
   try {
-    const storedCode = tempStorage[email];
-    if (!storedCode) {
+    const redisKey = `verification_code:${email}`;
+    const attemptsKey = `attempts:${email}`;
+
+    // Redis에서 인증 코드 가져오기
+    const storedData = await redisClint.get(redisKey);
+
+    if (!storedData) {
       return res
         .status(400)
-        .json({ message: "인증 코드가 요청되지 않았습니다." });
+        .json({ message: "인증 코드가 존재하지 않거나 만료되었습니다." });
     }
 
-    // 인증 코드 실패 횟수 확인
-    if (!tempStorage[email].attempts) {
-      tempStorage[email].attempts = 0;
+    let parsedData;
+    try {
+      parsedData = JSON.parse(storedData);
+    } catch (error) {
+      console.error("Redis 데이터 파싱 오류:", error.message);
+      return res
+        .status(500)
+        .json({ message: "서버 오류: 인증 코드 데이터 오류" });
     }
 
-    if (tempStorage[email].attempts >= 5) {
+    const { code: storedCode, expiration } = parsedData;
+    // // 인증 코드 실패 횟수 확인
+    const attempts = await redisClint.get(attemptsKey);
+    if (attempts && Number(attempts) >= 5) {
       return res
         .status(429)
         .json({ message: "너무 많은 시도! 10분 후 다시 시도하세요." });
     }
 
     // 인증 코드 만료 확인
-    if (storedCode.expiration < Date.now()) {
-      delete tempStorage[email];
+    if (Date.now() > expiration) {
+      await redisClint.del(email);
       return res
         .status(400)
         .json({ message: "유효하지 않거나 만료된 인증 코드입니다." });
     }
+
     // 인증 코드 검증
-    if (tempStorage[email].code !== code) {
-      tempStorage[email].attempts += 1;
+    if (storedCode !== code) {
+      await redisClint.incr(attemptsKey); // 실패 횟수 증가
+      await redisClint.expire(attemptsKey, 600); // 10분 후 자동 삭제
       return res
         .status(400)
         .json({ message: "인증 코드가 일치하지 않습니다." });
     }
 
     // 인증 성공 후 데이터 삭제
-    delete tempStorage[email]; // 인증 완료 후 삭제
+    await redisClint.del(redisKey); // Redis에서 삭제
+    await redisClint.del(attemptsKey);
+
     res.status(200).json({ message: "이메일 인증이 완료되었습니다." });
   } catch (error) {
     console.error("인증 코드 검증 실패:", error.message);

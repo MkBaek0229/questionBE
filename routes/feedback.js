@@ -6,8 +6,6 @@ import pool from "../db/connection.js";
 const getAssignedSystems = async (req, res) => {
   const { expertId } = req.query;
 
-  console.log("✅ [getAssignedSystems] Received expertId:", expertId);
-
   if (!expertId) {
     return res.status(400).json({
       resultCode: "F-1",
@@ -17,7 +15,7 @@ const getAssignedSystems = async (req, res) => {
 
   try {
     const query = `
-             SELECT 
+      SELECT 
         s.id AS systems_id, 
         s.name AS system_name, 
         u.institution_name, 
@@ -36,6 +34,7 @@ const getAssignedSystems = async (req, res) => {
 
     console.log("🟡 [getAssignedSystems] Running query:", query);
     console.log("🟡 Expert ID:", expertId);
+
     const [results] = await pool.query(query, [expertId]);
 
     if (!results.length) {
@@ -43,8 +42,6 @@ const getAssignedSystems = async (req, res) => {
     } else {
       console.log("✅ [getAssignedSystems] Query results:", results);
     }
-
-    console.log("✅ [getAssignedSystems] Query results:", results);
 
     res.status(200).json({
       resultCode: "S-1",
@@ -69,6 +66,7 @@ const getAssignedSystems = async (req, res) => {
  */
 const submitQuantitativeFeedback = async (req, res) => {
   const { systemId, expertId, feedbackResponses } = req.body;
+
   console.log(
     "📡 [피드백 저장 요청] systemId:",
     systemId,
@@ -76,6 +74,7 @@ const submitQuantitativeFeedback = async (req, res) => {
     expertId
   );
   console.log("📝 [저장할 데이터]:", feedbackResponses);
+
   if (!systemId || !expertId || !Array.isArray(feedbackResponses)) {
     return res.status(400).json({
       resultCode: "F-1",
@@ -100,7 +99,6 @@ const submitQuantitativeFeedback = async (req, res) => {
         );
         continue;
       }
-
       await connection.query(
         `INSERT INTO feedback (systems_id, user_id, expert_id, quantitative_response_id, feedback, created_at)
          VALUES (?, ?, ?, 
@@ -109,8 +107,10 @@ const submitQuantitativeFeedback = async (req, res) => {
         [systemId, userId, expertId, systemId, questionNumber, feedback]
       );
     }
+
     await connection.commit();
     connection.release();
+
     console.log("✅ [피드백 저장 성공]");
     res.status(200).json({ resultCode: "S-1", msg: "피드백 저장 완료" });
   } catch (error) {
@@ -126,6 +126,7 @@ const submitQuantitativeFeedback = async (req, res) => {
  */
 const submitQualitativeFeedback = async (req, res) => {
   const { systemId, expertId, feedbackResponses } = req.body;
+
   if (!systemId || !expertId || !Array.isArray(feedbackResponses)) {
     return res.status(400).json({
       resultCode: "F-1",
@@ -150,7 +151,6 @@ const submitQualitativeFeedback = async (req, res) => {
         );
         continue;
       }
-
       // ✅ 정성 응답 ID 가져오기
       const [responseResult] = await connection.query(
         `SELECT id FROM qualitative_responses 
@@ -176,6 +176,7 @@ const submitQualitativeFeedback = async (req, res) => {
 
     await connection.commit();
     connection.release();
+
     res.status(200).json({
       resultCode: "S-1",
       msg: "정성 피드백 저장 완료.",
@@ -202,6 +203,7 @@ const getFeedbacks = async (req, res) => {
     "questionNumber:",
     questionNumber
   );
+
   if (!systemId) {
     return res.status(400).json({
       resultCode: "F-1",
@@ -225,7 +227,9 @@ const getFeedbacks = async (req, res) => {
 
     console.log("🟡 [QUERY 실행] Query:", query);
     console.log("🟡 [QUERY PARAMS] systemId:", systemId);
+
     const [results] = await pool.query(query, [systemId]);
+
     console.log("✅ [API 응답] 피드백 데이터:", results);
 
     res.status(200).json({
@@ -250,6 +254,7 @@ const updateFeedbackStatus = async (req, res) => {
   const { systemId } = req.body;
 
   console.log("🟡 [updateFeedbackStatus] 요청 수신 - systemId:", systemId);
+
   if (!systemId) {
     return res.status(400).json({
       resultCode: "F-1",
@@ -361,6 +366,7 @@ const SystemsResult = async (req, res) => {
       LEFT JOIN expert e ON a.expert_id = e.id
       WHERE s.user_id = ?;
     `;
+
     const [results] = await pool.query(query, [userId]);
 
     res.status(200).json({
@@ -376,23 +382,27 @@ const SystemsResult = async (req, res) => {
     });
   }
 };
-
 const getSystemOwner = async (req, res) => {
   const { systemId } = req.query;
+
   console.log("✅ [getSystemOwner] Received systemId:", systemId);
+
   if (!systemId) {
     return res
       .status(400)
       .json({ resultCode: "F-1", msg: "systemId가 필요합니다." });
   }
+
   try {
     const query = "SELECT user_id FROM systems WHERE id = ?";
     const [result] = await pool.query(query, [systemId]);
+
     if (result.length === 0) {
       return res
         .status(404)
         .json({ resultCode: "F-2", msg: "해당 시스템을 찾을 수 없습니다." });
     }
+
     res.status(200).json({
       resultCode: "S-1",
       msg: "기관회원 조회 성공",
@@ -409,6 +419,7 @@ const getSystemOwner = async (req, res) => {
   }
 };
 
+// ✅ `SystemsResult` export 추가
 export {
   getAssignedSystems,
   submitQuantitativeFeedback,
