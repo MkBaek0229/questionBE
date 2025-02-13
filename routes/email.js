@@ -29,7 +29,7 @@ const validateEmail = (email) => {
 
 // 인증 코드 전송
 const sendVerificationCode = async (req, res) => {
-  const { email } = req.body;
+  const { email, member_type } = req.body;
 
   if (!email) {
     return res.status(400).json({ message: "이메일 주소가 필요합니다." });
@@ -43,12 +43,26 @@ const sendVerificationCode = async (req, res) => {
 
   try {
     // 이메일 중복 확인
-    const [existingUser] = await pool.query(
-      "SELECT * FROM User WHERE email = ?",
-      [email]
-    );
-    if (existingUser.length > 0) {
-      return res.status(400).json({ message: "이미 사용 중인 이메일입니다." });
+    if (member_type === "user") {
+      const [existingUser] = await pool.query(
+        "SELECT * FROM User WHERE email = ?",
+        [email]
+      );
+      if (existingUser.length > 0) {
+        return res
+          .status(400)
+          .json({ message: "이미 사용 중인 이메일입니다." });
+      }
+    } else if (member_type === "expert") {
+      const [existingUser] = await pool.query(
+        "SELECT * FROM expert WHERE email = ?",
+        [email]
+      );
+      if (existingUser.length > 0) {
+        return res
+          .status(400)
+          .json({ message: "이미 사용 중인 이메일입니다." });
+      }
     }
 
     // 요청 제한: 1분 내 3회 이상 요청 방지
