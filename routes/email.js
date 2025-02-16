@@ -1,6 +1,8 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import pool from "../db/connection.js"; // DB 연결 파일
+import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 dotenv.config();
 
@@ -164,4 +166,100 @@ const verifyCode = (req, res) => {
   }
 };
 
-export { verifyCode, sendVerificationCode };
+// ✅ 비밀번호 찾기 (이메일로 재설정 링크 전송)
+const findPassword = async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: "이메일이 필요합니다." });
+
+  try {
+    // ✅ 이메일이 존재하는지 확인
+    const [users] = await pool.query("SELECT id FROM User WHERE email = ?", [
+      email,
+    ]);
+
+    if (users.length === 0) {
+      return res.status(400).json({ message: "가입된 이메일이 없습니다." });
+    }
+
+    const userId = users[0].id;
+
+    // ✅ 기존 토큰 삭제
+    await pool.query("DELETE FROM PasswordResetTokens WHERE user_id = ?", [
+      userId,
+    ]);
+
+    // ✅ 랜덤 토큰 생성
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10분 후 만료
+
+    // ✅ DB에 저장
+    await pool.query(
+      "INSERT INTO PasswordResetTokens (user_id, token, expires_at) VALUES (?, ?, ?)",
+      [userId, resetToken, expiresAt]
+    );
+
+    // ✅ 비밀번호 재설정 이메일 전송
+    const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "비밀번호 재설정 요청",
+      html: `<p>비밀번호를 재설정하려면 아래 링크를 클릭하세요:</p>
+             <p><a href="${resetLink}">${resetLink}</a></p>
+             <p>이 링크는 10분 동안 유효합니다.</p>`,
+    });
+
+    res
+      .status(200)
+      .json({ message: "비밀번호 재설정 이메일이 전송되었습니다." });
+  } catch (error) {
+    console.error("❌ 비밀번호 찾기 실패:", error);
+    res.status(500).json({ message: "서버 오류 발생" });
+  }
+};
+
+// ✅ 비밀번호 재설정
+const resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+
+  if (!token || !password) {
+    return res
+      .status(400)
+      .json({ message: "토큰과 새 비밀번호가 필요합니다." });
+  }
+
+  try {
+    // ✅ 토큰 검증 (만료시간 체크)
+    const [tokenData] = await pool.query(
+      "SELECT user_id FROM PasswordResetTokens WHERE token = ? AND expires_at > NOW()",
+      [token]
+    );
+
+    if (tokenData.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "유효하지 않거나 만료된 토큰입니다." });
+    }
+
+    const userId = tokenData[0].user_id;
+
+    // ✅ 비밀번호 해싱 후 저장
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await pool.query("UPDATE User SET password = ? WHERE id = ?", [
+      hashedPassword,
+      userId,
+    ]);
+
+    // ✅ 토큰 사용 후 삭제 (한 번만 사용 가능)
+    await pool.query("DELETE FROM PasswordResetTokens WHERE user_id = ?", [
+      userId,
+    ]);
+
+    res.status(200).json({ message: "비밀번호가 변경되었습니다." });
+  } catch (error) {
+    console.error("❌ 비밀번호 재설정 실패:", error);
+    res.status(500).json({ message: "서버 오류 발생" });
+  }
+};
+
+export { verifyCode, sendVerificationCode, findPassword, resetPassword };

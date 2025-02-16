@@ -17,7 +17,12 @@ import {
   getExpertInfo,
 } from "./routes/expert.js";
 import { postsystem, getsystems, deleteSystem } from "./routes/system.js";
-import { sendVerificationCode, verifyCode } from "./routes/email.js";
+import {
+  findPassword,
+  resetPassword,
+  sendVerificationCode,
+  verifyCode,
+} from "./routes/email.js";
 import {
   handleSelfAssessmentSave,
   getQuantitativeQuestions,
@@ -312,6 +317,10 @@ app.delete(
 // ✅ 이메일 인증 라우트
 app.post("/email/send-verification-code", csrfProtection, sendVerificationCode);
 app.post("/email/verify-code", csrfProtection, verifyCode);
+
+// ✅ 비밀번호 찾기 & 재설정
+app.post("/find-password", findPassword);
+app.post("/reset-password", resetPassword);
 
 // ✅ 시스템 라우트
 app.post("/systems", requireAuth, csrfProtection, postsystem);
