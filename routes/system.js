@@ -4,8 +4,7 @@ import pool from "../db/connection.js";
 const postsystem = async (req, res) => {
   const {
     name,
-    min_subjects,
-    max_subjects,
+    num_data_subjects, // ✅ 변경된 컬럼명 사용
     purpose,
     is_private,
     is_unique,
@@ -40,13 +39,12 @@ const postsystem = async (req, res) => {
 
     // 시스템 등록
     const [result] = await pool.query(
-      `INSERT INTO systems (user_id, name, min_subjects, max_subjects, purpose, is_private, is_unique, is_resident, reason, assessment_status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '시작전')`,
+      `INSERT INTO systems (user_id, name, num_data_subjects, purpose, is_private, is_unique, is_resident, reason, assessment_status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, '시작전')`,
       [
         user_id,
         name,
-        min_subjects,
-        max_subjects,
+        num_data_subjects, // ✅ 수정된 부분
         purpose,
         is_private === "포함",
         is_unique === "포함",
@@ -117,8 +115,7 @@ const getSystemById = async (req, res) => {
           systems.id AS systems_id,
           systems.name AS system_name,
           systems.purpose,
-          systems.min_subjects,
-          systems.max_subjects,
+          systems.num_data_subjects, -- ✅ 수정된 컬럼명 추가
           systems.assessment_status,
           User.institution_name,
           User.representative_name
@@ -142,14 +139,14 @@ const getSystemById = async (req, res) => {
 // 시스템 업데이트
 const updateSystem = async (req, res) => {
   const { id } = req.params;
-  const { name, purpose, min_subjects, max_subjects } = req.body;
+  const { name, purpose, num_data_subjects } = req.body; // ✅ 수정된 컬럼 사용
 
   try {
     const [result] = await pool.query(
       `UPDATE systems
-       SET name = ?, purpose = ?, min_subjects = ?, max_subjects = ?
+       SET name = ?, purpose = ?, num_data_subjects = ? -- ✅ 변경된 부분
        WHERE id = ?`,
-      [name, purpose, min_subjects, max_subjects, id]
+      [name, purpose, num_data_subjects, id]
     );
 
     if (result.affectedRows === 0) {
@@ -166,7 +163,6 @@ const updateSystem = async (req, res) => {
       .json({ message: "시스템 업데이트 중 오류가 발생했습니다." });
   }
 };
-
 // 시스템 삭제
 const deleteSystem = async (req, res) => {
   const { id } = req.params;
@@ -200,8 +196,7 @@ const getAllSystems = async (req, res) => {
           systems.id AS systems_id,
           systems.name AS system_name,
           systems.purpose,
-          systems.min_subjects,
-          systems.max_subjects,
+          systems.num_data_subjects, -- ✅ 추가된 부분
           systems.assessment_status,
           User.institution_name AS user_institution_name,
           User.representative_name AS user_representative_name,
