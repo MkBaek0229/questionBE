@@ -1,8 +1,170 @@
-import express from "express";
-import bcrypt from "bcrypt";
 import pool from "../db/connection.js"; // 데이터베이스 연결
+import bcrypt from "bcrypt"; // 비밀번호 암호화
 
-const router = express.Router();
+const getAllUsers = async (req, res) => {
+  try {
+    const query = `
+      SELECT id, email, institution_name,institution_address, representative_name,phone_number, created_at
+      FROM User;
+    `;
+
+    const [users] = await pool.query(query);
+
+    res.status(200).json({
+      resultCode: "S-1",
+      msg: "모든 유저 조회 성공",
+      data: users,
+    });
+  } catch (error) {
+    console.error("❌ [GET ALL USERS] 조회 오류:", error);
+    res.status(500).json({
+      resultCode: "F-1",
+      msg: "서버 에러 발생",
+      error: error.message,
+    });
+  }
+};
+const getUserById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = `
+      SELECT id, email, institution_name,institution_address, representative_name,phone_number, created_at
+      FROM User
+      WHERE id = ?;
+    `;
+
+    const [user] = await pool.query(query, [id]);
+
+    if (user.length === 0) {
+      return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+    }
+
+    res.status(200).json({
+      resultCode: "S-1",
+      msg: "유저 조회 성공",
+      data: user[0],
+    });
+  } catch (error) {
+    console.error("❌ [GET USER BY ID] 조회 오류:", error);
+    res.status(500).json({
+      resultCode: "F-1",
+      msg: "서버 에러 발생",
+      error: error.message,
+    });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = `DELETE FROM User WHERE id = ?;`;
+
+    const [result] = await pool.query(query, [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+    }
+
+    res.status(200).json({
+      resultCode: "S-1",
+      msg: "유저 삭제 성공",
+    });
+  } catch (error) {
+    console.error("❌ [DELETE USER] 삭제 오류:", error);
+    res.status(500).json({
+      resultCode: "F-1",
+      msg: "서버 에러 발생",
+      error: error.message,
+    });
+  }
+};
+const getAllExperts = async (req, res) => {
+  try {
+    const query = `
+      SELECT id, name, institution_name, ofcps, phone_number, email, major_carrea
+      FROM expert;
+    `;
+
+    console.log("📌 전문가 목록 조회 요청 실행 중...");
+
+    const [experts] = await pool.query(query);
+
+    console.log("✅ 전문가 목록 조회 성공:", experts);
+
+    res.status(200).json({
+      resultCode: "S-1",
+      msg: "모든 전문가 조회 성공",
+      data: experts,
+    });
+  } catch (error) {
+    console.error("❌ [GET ALL EXPERTS] 조회 오류:", error);
+    res.status(500).json({
+      resultCode: "F-1",
+      msg: "서버 에러 발생",
+      error: error.message,
+    });
+  }
+};
+
+const getExpertById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = `
+      SELECT id, name, institution_name, ofcps, phone_number, email, major_carrea
+      FROM expert
+      WHERE id = ?;
+    `;
+
+    const [user] = await pool.query(query, [id]);
+
+    if (user.length === 0) {
+      return res.status(404).json({ message: "관리자를 찾을 수 없습니다." });
+    }
+
+    res.status(200).json({
+      resultCode: "S-1",
+      msg: "관리자 조회 성공",
+      data: user[0],
+    });
+  } catch (error) {
+    console.error("❌ [GET USER BY ID] 조회 오류:", error);
+    res.status(500).json({
+      resultCode: "F-1",
+      msg: "서버 에러 발생",
+      error: error.message,
+    });
+  }
+};
+
+const deleteExpert = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = `DELETE FROM expert WHERE id = ?;`;
+
+    const [result] = await pool.query(query, [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "관리자를 찾을 수 없습니다." });
+    }
+
+    res.status(200).json({
+      resultCode: "S-1",
+      msg: "관리자 삭제 성공",
+    });
+  } catch (error) {
+    console.error("❌ [DELETE USER] 삭제 오류:", error);
+    res.status(500).json({
+      resultCode: "F-1",
+      msg: "서버 에러 발생",
+      error: error.message,
+    });
+  }
+};
+
 /**
  * 🔹 모든 시스템 조회 (슈퍼유저 전용)
  */
@@ -86,24 +248,32 @@ const loginSuperUser = async (req, res) => {
     }
 
     const superuser = rows[0];
-    const isMatch = password === superuser.password; // 단순 비교로 변경
 
+    const isMatch = password === superuser.password;
     if (!isMatch) {
       return res
         .status(400)
         .json({ message: "이메일 또는 비밀번호가 잘못되었습니다." });
     }
 
-    req.session.superuser = {
-      id: superuser.id,
-      email: superuser.email,
-      name: superuser.name,
-      member_type: superuser.member_type,
-    };
+    // 🔥 세션 재생성 (세션 ID 변경)
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error("세션 재생성 오류:", err);
+        return res.status(500).json({ message: "서버 오류 발생" });
+      }
 
-    res.status(200).json({
-      message: "로그인 성공",
-      data: req.session.superuser,
+      req.session.superuser = {
+        id: superuser.id,
+        email: superuser.email,
+        name: superuser.name,
+        member_type: superuser.member_type,
+      };
+
+      res.status(200).json({
+        message: "로그인 성공",
+        data: req.session.superuser,
+      });
     });
   } catch (error) {
     console.error("슈퍼유저 로그인 오류:", error);
@@ -114,12 +284,22 @@ const loginSuperUser = async (req, res) => {
 /**
  * 🔹 슈퍼유저 로그아웃
  */
-const logoutSuperUser = async (req, res) => {
+const logoutSuperUser = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      console.error("슈퍼유저 로그아웃 오류:", err);
+      console.error("❌ [LOGOUT SUPERUSER] 로그아웃 실패:", err);
       return res.status(500).json({ message: "로그아웃 실패" });
     }
+
+    res.clearCookie("connect.sid", {
+      path: "/",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+
     res.status(200).json({ message: "로그아웃 성공" });
   });
 };
@@ -515,6 +695,12 @@ const deleteQualitativeQuestion = async (req, res) => {
 };
 
 export {
+  getAllUsers,
+  getUserById,
+  deleteUser,
+  getAllExperts,
+  getExpertById,
+  deleteExpert,
   getAllSystems,
   getMatchedExperts,
   loginSuperUser,

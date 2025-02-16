@@ -1,7 +1,7 @@
 -- 데이터베이스 설정
-DROP DATABASE IF EXISTS test;
-CREATE DATABASE test;
-USE test;
+DROP DATABASE IF EXISTS test2;
+CREATE DATABASE test2;
+USE test2;
 
 -- 데이터베이스 설정
 ALTER DATABASE test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -390,6 +390,16 @@ VALUES ('김동욱', 'test@test', '5397', '010-1234-5678');
 SELECT * FROM systems s ;
 UPDATE SuperUser
 SET member_type = 'superuser';
+
+DELETE FROM SuperUser WHERE id = 1;
+
+ALTER TABLE SuperUser AUTO_INCREMENT = 1;
+
+
+-- 슈퍼유저 만들기
+INSERT INTO SuperUser (name, email, password, phone_number) 
+VALUES ('여상수', 'martin@martinlab.co.kr', '$2b$10$SvSvC8ZBCWMqKyXVrgDGte1wG6Wq/8NLUSNVjy/90GL3R1dsP2JsW','010-2743-0001');
+
 
 -- 정량 응답 테이블 수정 (NULL 방지)
 ALTER TABLE quantitative_responses 
