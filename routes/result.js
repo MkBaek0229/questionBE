@@ -4,9 +4,26 @@ import pool from "../db/connection.js";
 const calculateAssessmentScore = async (systemId) => {
   console.log("Calculating score for systemId:", systemId);
 
-  // ✅ 변경된 테이블 구조 반영
-  const queryQuantitative = `SELECT response FROM quantitative_responses WHERE systems_id = ?`;
-  const queryQualitative = `SELECT response FROM qualitative_responses WHERE systems_id = ?`;
+  // ✅ 점수를 DB에서 가져와 동적으로 계산하도록 변경
+  const queryQuantitative = `
+    SELECT qr.response, 
+           qq.score_fulfilled, 
+           qq.score_unfulfilled, 
+           qq.score_consult, 
+           qq.score_not_applicable
+    FROM quantitative_responses qr
+    JOIN quantitative_questions qq ON qr.question_id = qq.id
+    WHERE qr.systems_id = ?;
+  `;
+
+  const queryQualitative = `
+    SELECT qr.response, 
+           qq.score_consult, 
+           qq.score_not_applicable
+    FROM qualitative_responses qr
+    JOIN qualitative_questions qq ON qr.question_id = qq.id
+    WHERE qr.systems_id = ?;
+  `;
 
   try {
     const [quantitativeResults] = await pool.query(queryQuantitative, [
@@ -19,30 +36,50 @@ const calculateAssessmentScore = async (systemId) => {
 
     let score = 0;
 
-    // ✅ 정량 평가 점수 계산
+    // 정량 평가 점수 계산
     quantitativeResults.forEach((item) => {
-      if (item.response === "이행") score += 1;
-      else if (item.response === "자문필요") score += 0.3;
+      if (item.response === "이행") score += parseFloat(item.score_fulfilled);
+      else if (item.response === "미이행")
+        score += parseFloat(item.score_unfulfilled);
+      else if (item.response === "자문필요")
+        score += parseFloat(item.score_consult);
+      else if (item.response === "해당없음")
+        score += parseFloat(item.score_not_applicable);
     });
 
-    // ✅ 정성 평가 점수 계산
+    // 정성 평가 점수 계산
     qualitativeResults.forEach((item) => {
-      if (item.response === "자문필요") score += 0.3;
+      if (item.response === "자문필요") score += parseFloat(item.score_consult);
+      else if (item.response === "해당없음")
+        score += parseFloat(item.score_not_applicable);
     });
 
-    console.log("Calculated score:", score);
+    console.log("✅ [DEBUG] 최종 계산된 점수:", score);
 
-    let grade = "D";
-    if (score >= 80) grade = "S";
-    else if (score >= 60) grade = "A";
-    else if (score >= 40) grade = "B";
-    else if (score >= 20) grade = "C";
+    let grade;
+
+    switch (true) {
+      case score >= 90:
+        grade = "S";
+        break;
+      case score >= 80:
+        grade = "A";
+        break;
+      case score >= 70:
+        grade = "B";
+        break;
+      case score >= 60:
+        grade = "C";
+        break;
+      default:
+        grade = "D";
+    }
 
     console.log("Calculated grade:", grade);
 
     return { score, grade };
   } catch (error) {
-    console.error("점수 계산 실패:", error.message);
+    console.error("❌ [ERROR] 점수 계산 실패:", error.message);
     throw error;
   }
 };
