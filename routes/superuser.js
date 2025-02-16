@@ -505,22 +505,38 @@ const getSystemById = async (req, res) => {
 
 // POST /superuser/selftest/quantitative
 const addQuantitativeQuestion = async (req, res) => {
-  const { question_number, question, evaluation_criteria, legal_basis, score } =
-    req.body;
+  const {
+    question_number,
+    question,
+    evaluation_criteria,
+    legal_basis,
+    score_fulfilled,
+    score_unfulfilled,
+    score_consult,
+    score_not_applicable,
+  } = req.body;
 
-  if (!question_number || !question || !evaluation_criteria || !score) {
+  console.log("📥 [DEBUG] 요청된 데이터:", req.body); // 디버깅용 로그 추가
+
+  if (!question_number || !question || !evaluation_criteria) {
     return res.status(400).json({ message: "필수 항목이 누락되었습니다." });
   }
 
   try {
     const [result] = await pool.query(
-      "INSERT INTO quantitative_questions (question_number, question, evaluation_criteria, legal_basis, score) VALUES (?, ?, ?, ?, ?)",
+      `INSERT INTO quantitative_questions 
+      (question_number, question, evaluation_criteria, legal_basis, 
+      score_fulfilled, score_unfulfilled, score_consult, score_not_applicable) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         question_number,
         question,
         evaluation_criteria,
         legal_basis || null,
-        score,
+        score_fulfilled,
+        score_unfulfilled,
+        score_consult,
+        score_not_applicable,
       ]
     );
 
@@ -536,22 +552,36 @@ const addQuantitativeQuestion = async (req, res) => {
 // PUT /superuser/selftest/quantitative/:id
 const editQuantitativeQuestion = async (req, res) => {
   const { id } = req.params;
-  const { question_number, question, evaluation_criteria, legal_basis, score } =
-    req.body;
+  const {
+    question_number,
+    question,
+    evaluation_criteria,
+    legal_basis,
+    score_fulfilled,
+    score_unfulfilled,
+    score_consult,
+    score_not_applicable,
+  } = req.body;
 
-  if (!question_number || !question || !evaluation_criteria || !score) {
+  if (!question_number || !question || !evaluation_criteria) {
     return res.status(400).json({ message: "필수 항목이 누락되었습니다." });
   }
 
   try {
     const [result] = await pool.query(
-      "UPDATE quantitative_questions SET question_number = ?, question = ?, evaluation_criteria = ?, legal_basis = ?, score = ? WHERE id = ?",
+      `UPDATE quantitative_questions 
+      SET question_number = ?, question = ?, evaluation_criteria = ?, legal_basis = ?, 
+      score_fulfilled = ?, score_unfulfilled = ?, score_consult = ?, score_not_applicable = ? 
+      WHERE id = ?`,
       [
         question_number,
         question,
         evaluation_criteria,
         legal_basis || null,
-        score,
+        score_fulfilled,
+        score_unfulfilled,
+        score_consult,
+        score_not_applicable,
         id,
       ]
     );
@@ -596,31 +626,34 @@ const addQualitativeQuestion = async (req, res) => {
     indicator_definition,
     evaluation_criteria,
     reference_info,
+    score_consult = 0,
+    score_not_applicable = 0,
   } = req.body;
 
-  // 필수 항목 검증
   if (!question_number || !indicator || !evaluation_criteria) {
     return res.status(400).json({ message: "필수 항목이 누락되었습니다." });
   }
 
   try {
-    // SQL 쿼리로 정성 문항 추가
     const [result] = await pool.query(
-      "INSERT INTO qualitative_questions (question_number, indicator, indicator_definition, evaluation_criteria, reference_info) VALUES (?, ?, ?, ?, ?)",
+      `INSERT INTO qualitative_questions 
+      (question_number, indicator, indicator_definition, evaluation_criteria, reference_info, 
+      score_consult, score_not_applicable) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         question_number,
         indicator,
         indicator_definition || null,
         evaluation_criteria,
         reference_info || null,
+        score_consult,
+        score_not_applicable,
       ]
     );
 
-    // 문항 추가 완료
-    res.status(201).json({
-      message: "문항이 추가되었습니다.",
-      id: result.insertId, // 새로 추가된 문항의 ID 반환
-    });
+    res
+      .status(201)
+      .json({ message: "문항이 추가되었습니다.", id: result.insertId });
   } catch (error) {
     console.error("문항 추가 실패:", error);
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
@@ -636,33 +669,36 @@ const editQualitativeQuestion = async (req, res) => {
     indicator_definition,
     evaluation_criteria,
     reference_info,
+    score_consult,
+    score_not_applicable,
   } = req.body;
 
-  // 필수 항목 검증
   if (!question_number || !indicator || !evaluation_criteria) {
     return res.status(400).json({ message: "필수 항목이 누락되었습니다." });
   }
 
   try {
-    // SQL 쿼리로 정성 문항 수정
     const [result] = await pool.query(
-      "UPDATE qualitative_questions SET question_number = ?, indicator = ?, indicator_definition = ?, evaluation_criteria = ?, reference_info = ? WHERE id = ?",
+      `UPDATE qualitative_questions 
+      SET question_number = ?, indicator = ?, indicator_definition = ?, evaluation_criteria = ?, 
+      reference_info = ?, score_consult = ?, score_not_applicable = ? 
+      WHERE id = ?`,
       [
-        question_number || null,
-        indicator || null,
+        question_number,
+        indicator,
         indicator_definition || null,
-        evaluation_criteria || null,
+        evaluation_criteria,
         reference_info || null,
+        score_consult,
+        score_not_applicable,
         id,
       ]
     );
 
-    // 수정된 문항이 없으면 404 오류
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "문항을 찾을 수 없습니다." });
     }
 
-    // 문항 수정 완료
     res.status(200).json({ message: "문항이 수정되었습니다." });
   } catch (error) {
     console.error("문항 수정 실패:", error);
