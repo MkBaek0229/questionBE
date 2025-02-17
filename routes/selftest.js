@@ -233,7 +233,6 @@ const getQuantitativeResponses = async (req, res) => {
         qq.question, 
         qq.evaluation_criteria, 
         qq.legal_basis, 
-        qq.score,
         COALESCE(qr.response, '-') AS response, 
         COALESCE(qr.additional_comment, '') AS additional_comment, 
         COALESCE(qr.file_path, '') AS file_path
@@ -309,10 +308,9 @@ const getQualitativeResponses = async (req, res) => {
 };
 
 const updateQuantitativeQuestion = async (req, res) => {
-  const { questionId, question, evaluationCriteria, legalBasis, score } =
-    req.body;
+  const { questionId, question, evaluationCriteria, legalBasis } = req.body;
 
-  if (!questionId || !question || !evaluationCriteria || !score) {
+  if (!questionId || !question || !evaluationCriteria) {
     return res
       .status(400)
       .json({ message: "필수 입력 항목이 누락되었습니다." });
@@ -321,7 +319,7 @@ const updateQuantitativeQuestion = async (req, res) => {
   try {
     const query = `
       UPDATE quantitative_questions
-      SET question = ?, evaluation_criteria = ?, legal_basis = ?, score = ?
+      SET question = ?, evaluation_criteria = ?, legal_basis = ?,
       WHERE id = ?;
     `;
 
@@ -329,7 +327,6 @@ const updateQuantitativeQuestion = async (req, res) => {
       question,
       evaluationCriteria,
       legalBasis || null,
-      score,
       questionId,
     ]);
 
