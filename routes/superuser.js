@@ -503,6 +503,73 @@ const getSystemById = async (req, res) => {
   }
 };
 
+// ✅ 카테고리 목록 조회
+const getCategories = async (req, res) => {
+  try {
+    const [categories] = await pool.query("SELECT * FROM categories");
+    res.json(categories);
+  } catch (error) {
+    console.error("❌ [ERROR] 카테고리 목록 조회 실패:", error);
+    res.status(500).json({ message: "서버 오류 발생" });
+  }
+};
+
+// ✅ 2. 새로운 카테고리 추가
+const addCategory = async (req, res) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ message: "카테고리 이름을 입력하세요." });
+  }
+
+  try {
+    const query = "INSERT INTO categories (name) VALUES (?)";
+    await pool.query(query, [name]);
+
+    res.status(201).json({ message: "✅ 카테고리 추가 완료" });
+  } catch (error) {
+    console.error("❌ [ERROR] 카테고리 추가 실패:", error);
+    res.status(500).json({ message: "서버 오류 발생" });
+  }
+};
+
+// ✅ 3. 카테고리 수정
+const updateCategory = async (req, res) => {
+  const { categoryId } = req.params;
+  const { name } = req.body;
+
+  if (!name) {
+    return res
+      .status(400)
+      .json({ message: "새로운 카테고리 이름을 입력하세요." });
+  }
+
+  try {
+    const query = "UPDATE categories SET name = ? WHERE id = ?";
+    await pool.query(query, [name, categoryId]);
+
+    res.status(200).json({ message: "✅ 카테고리 수정 완료" });
+  } catch (error) {
+    console.error("❌ [ERROR] 카테고리 수정 실패:", error);
+    res.status(500).json({ message: "서버 오류 발생" });
+  }
+};
+
+// ✅ 4. 카테고리 삭제
+const deleteCategory = async (req, res) => {
+  const { categoryId } = req.params;
+
+  try {
+    const query = "DELETE FROM categories WHERE id = ?";
+    await pool.query(query, [categoryId]);
+
+    res.status(200).json({ message: "✅ 카테고리 삭제 완료" });
+  } catch (error) {
+    console.error("❌ [ERROR] 카테고리 삭제 실패:", error);
+    res.status(500).json({ message: "서버 오류 발생" });
+  }
+};
+
 // POST /superuser/selftest/quantitative
 const addQuantitativeQuestion = async (req, res) => {
   const {
@@ -514,11 +581,12 @@ const addQuantitativeQuestion = async (req, res) => {
     score_unfulfilled,
     score_consult,
     score_not_applicable,
+    category_id,
   } = req.body;
 
   console.log("📥 [DEBUG] 요청된 데이터:", req.body); // 디버깅용 로그 추가
 
-  if (!question_number || !question || !evaluation_criteria) {
+  if (!question_number || !question || !evaluation_criteria || !category_id) {
     return res.status(400).json({ message: "필수 항목이 누락되었습니다." });
   }
 
@@ -526,8 +594,8 @@ const addQuantitativeQuestion = async (req, res) => {
     const [result] = await pool.query(
       `INSERT INTO quantitative_questions 
       (question_number, question, evaluation_criteria, legal_basis, 
-      score_fulfilled, score_unfulfilled, score_consult, score_not_applicable) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      score_fulfilled, score_unfulfilled, score_consult, score_not_applicable, category_id) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         question_number,
         question,
@@ -537,6 +605,7 @@ const addQuantitativeQuestion = async (req, res) => {
         score_unfulfilled,
         score_consult,
         score_not_applicable,
+        category_id,
       ]
     );
 
@@ -754,4 +823,8 @@ export {
   addQualitativeQuestion,
   editQualitativeQuestion,
   deleteQualitativeQuestion,
+  getCategories,
+  addCategory,
+  updateCategory,
+  deleteCategory,
 };

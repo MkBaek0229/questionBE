@@ -74,7 +74,12 @@ import {
   addQualitativeQuestion,
   editQualitativeQuestion,
   deleteQualitativeQuestion,
+  getCategories,
+  deleteCategory,
+  updateCategory,
+  addCategory,
 } from "./routes/superuser.js";
+import { get } from "http";
 
 dotenv.config();
 const __filename = fileURLToPath(import.meta.url); // ✅ 현재 파일 경로 변환
@@ -278,6 +283,18 @@ app.delete(
   deleteExpert
 );
 // 정량 문항 API
+
+// ✅ 카테고리 목록 조회
+app.get("/categories", getCategories);
+
+// ✅ 카테고리 추가
+app.post("/categories/add", addCategory);
+
+// ✅ 카테고리 수정
+app.put("/categories/edit/:categoryId", updateCategory);
+
+// ✅ 카테고리 삭제
+app.delete("/categories/delete/:categoryId", deleteCategory);
 // ✅ 정량 문항 관리 (슈퍼유저 전용)
 app.post(
   "/super/selftest/quantitative/add",

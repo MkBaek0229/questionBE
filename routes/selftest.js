@@ -308,9 +308,10 @@ const getQualitativeResponses = async (req, res) => {
 };
 
 const updateQuantitativeQuestion = async (req, res) => {
-  const { questionId, question, evaluationCriteria, legalBasis } = req.body;
+  const { questionId, question, evaluationCriteria, legalBasis, category_id } =
+    req.body;
 
-  if (!questionId || !question || !evaluationCriteria) {
+  if (!questionId || !question || !evaluationCriteria || !category_id) {
     return res
       .status(400)
       .json({ message: "필수 입력 항목이 누락되었습니다." });
@@ -319,7 +320,7 @@ const updateQuantitativeQuestion = async (req, res) => {
   try {
     const query = `
       UPDATE quantitative_questions
-      SET question = ?, evaluation_criteria = ?, legal_basis = ?,
+      SET question = ?, evaluation_criteria = ?, legal_basis = ?,  category_id = ?,
       WHERE id = ?;
     `;
 
@@ -328,6 +329,7 @@ const updateQuantitativeQuestion = async (req, res) => {
       evaluationCriteria,
       legalBasis || null,
       questionId,
+      category_id,
     ]);
 
     if (result.affectedRows === 0) {
@@ -387,6 +389,7 @@ const updateQualitativeQuestion = async (req, res) => {
     res.status(500).json({ message: "서버 오류 발생", error: error.message });
   }
 };
+
 export {
   handleSelfAssessmentSave,
   submitQuantitativeResponses,

@@ -228,7 +228,6 @@ const getAssessmentStatuses = async (req, res) => {
   }
 };
 
-// ✅ 4. 진단 분야별 보호 수준 조회
 const getCategoryProtectionScores = async (req, res) => {
   const { systemId } = req.params;
 
