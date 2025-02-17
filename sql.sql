@@ -4,7 +4,7 @@ CREATE DATABASE test2;
 USE test2;
 
 -- 데이터베이스 설정
-ALTER DATABASE test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER DATABASE test2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 SHOW tables;
 -- 회원 테이블
 CREATE TABLE `User` (
@@ -22,6 +22,7 @@ CREATE TABLE `User` (
     email_token_expiration DATETIME DEFAULT NULL COMMENT '이메일 토큰 만료 시간'
 );
 
+SELECT * from SUPERUSER;
 
 -- INDEX 추가
 ALTER TABLE `User`
@@ -44,7 +45,14 @@ CREATE TABLE expert (
     UNIQUE KEY uk_email (email)
 )
 
-
+-- 비밀번호 재설정 요청을 저장할 테이블을 추가 
+CREATE TABLE PasswordResetTokens (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
+);
 
 
 -- 슈퍼유저 테이블
@@ -57,6 +65,10 @@ CREATE TABLE SuperUser (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '가입 날짜',
     member_type VARCHAR(50) NOT NULL DEFAULT 'superuser' COMMENT '회원 유형'
 );
+
+select * from SUPERUSER;
+
+
 
 
 -- 시스템 테이블
@@ -75,6 +87,12 @@ CREATE TABLE systems (
     assessment_status ENUM('시작전', '완료') NOT NULL COMMENT '평가 상태',
     assignment_id INT DEFAULT NULL COMMENT '담당 ID'
 );
+
+ALTER TABLE systems ADD COLUMN num_data_subjects INT NOT NULL COMMENT '정보 주체 수';
+
+ALTER TABLE systems DROP COLUMN min_subjects, DROP COLUMN max_subjects;
+
+ALTER TABLE systems MODIFY COLUMN num_data_subjects INT NOT NULL;
 
 -- INDEX 추가
 ALTER TABLE systems 
@@ -110,7 +128,6 @@ CREATE TABLE self_assessment (
 ALTER TABLE self_assessment 
 ADD CONSTRAINT uk_user_system UNIQUE (user_id, systems_id);
 
-
 -- INDEX 추가
 ALTER TABLE self_assessment 
 ADD INDEX idx_user_id (user_id),
@@ -132,7 +149,6 @@ CREATE TABLE assignment (
     feedback_status TINYINT(1) NOT NULL COMMENT '피드백 완료 여부',
     PRIMARY KEY (id)
 )
-
 
 
 -- UNIQUE KEY 추가
@@ -166,8 +182,17 @@ CREATE TABLE quantitative_questions (
     legal_basis TEXT COMMENT '근거 법령',
     score DECIMAL(5,2) DEFAULT NULL COMMENT '배점',
     UNIQUE KEY uk_question_number (question_number)
-)
+);
 
+ALTER TABLE quantitative_questions 
+DROP COLUMN score;
+
+
+ALTER TABLE quantitative_questions 
+ADD COLUMN score_fulfilled DECIMAL(5,2) NOT NULL DEFAULT 5 COMMENT '이행 점수',
+ADD COLUMN score_unfulfilled DECIMAL(5,2) NOT NULL DEFAULT 0 COMMENT '미이행 점수',
+ADD COLUMN score_consult DECIMAL(5,2) NOT NULL DEFAULT 2 COMMENT '자문필요 점수',
+ADD COLUMN score_not_applicable DECIMAL(5,2) NOT NULL DEFAULT 0 COMMENT '해당없음 점수';
 
 
 -- 정량 응답 테이블 (quantitative_responses)
@@ -198,6 +223,7 @@ CREATE INDEX idx_question_id ON quantitative_responses (question_id);
 CREATE INDEX idx_systems_id ON quantitative_responses (systems_id);
 
 SHOW tables;
+
 -- 정성 문항 테이블
 CREATE TABLE qualitative_questions (
     id INT NOT NULL AUTO_INCREMENT COMMENT '문항 ID',
@@ -208,7 +234,13 @@ CREATE TABLE qualitative_questions (
     reference_info TEXT COMMENT '참고사항',
     PRIMARY KEY (id),
     UNIQUE KEY uk_question_number (question_number)
-)
+);
+
+ALTER TABLE qualitative_questions 
+MODIFY COLUMN score_consult DECIMAL(5,2) NOT NULL DEFAULT 1 COMMENT '자문필요 점수',
+MODIFY COLUMN score_not_applicable DECIMAL(5,2) NOT NULL DEFAULT 0 COMMENT '해당없음 점수';
+
+
 -- 🚀 정성 문항 테이블에 system_id 컬럼 추가
 ALTER TABLE qualitative_questions 
 drop COLUMN system_id ;
@@ -226,7 +258,7 @@ CREATE TABLE qualitative_responses (
     additional_comment TEXT COMMENT '추가 의견',
     file_path VARCHAR(255) DEFAULT NULL COMMENT '파일 업로드 경로',
     updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '마지막 수정 시간',
-    
+
     -- UNIQUE 제약 조건 추가
     CONSTRAINT uk_system_user_question UNIQUE (systems_id, user_id, question_id),
     
@@ -235,6 +267,7 @@ CREATE TABLE qualitative_responses (
     CONSTRAINT fk_qualitative_responses_user FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     CONSTRAINT fk_qualitative_responses_question FOREIGN KEY (question_id) REFERENCES qualitative_questions(id) ON DELETE CASCADE
 );
+
 
 -- 인덱스 추가 (검색 성능 최적화)
 CREATE INDEX idx_user_id ON qualitative_responses (user_id);
@@ -305,12 +338,47 @@ CREATE TABLE feedback (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '피드백 수정 날짜',
 
     -- ✅ 관계 설정 (정량/정성 응답 테이블을 각각 참조)
-    FOREIGN KEY (system_id) REFERENCES systems(id) ON DELETE CASCADE,
+    FOREIGN KEY (systems_id) REFERENCES systems(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE,
     FOREIGN KEY (expert_id) REFERENCES Expert(id) ON DELETE CASCADE,
     FOREIGN KEY (quantitative_response_id) REFERENCES quantitative_responses(id) ON DELETE CASCADE,
     FOREIGN KEY (qualitative_response_id) REFERENCES qualitative_responses(id) ON DELETE CASCADE
 );
+
+CREATE TABLE categories (
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '카테고리 ID',
+    name VARCHAR(255) NOT NULL UNIQUE COMMENT '카테고리명'
+);
+
+ALTER TABLE quantitative_questions 
+ADD COLUMN category_id INT NOT NULL COMMENT '카테고리 ID';
+
+INSERT INTO categories (name) VALUES 
+('관리체계'),
+('정보 유체 관리'),
+('침해 방지'),
+('종합 관리');
+
+UPDATE quantitative_questions 
+SET category_id = (SELECT id FROM categories WHERE name = '관리체계')
+WHERE question_number IN (1, 2, 3, 4, 5, 6, 7, 8);
+
+UPDATE quantitative_questions 
+SET category_id = (SELECT id FROM categories WHERE name = '정보 유체 관리')
+WHERE question_number IN (9, 10, 11, 12, 13, 14, 15, 16);
+
+UPDATE quantitative_questions 
+SET category_id = (SELECT id FROM categories WHERE name = '침해 방지')
+WHERE question_number IN (17, 18, 19, 20, 21, 22, 23, 24);
+
+UPDATE quantitative_questions 
+SET category_id = (SELECT id FROM categories WHERE name = '종합 관리')
+WHERE question_number IN (25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41,42, 43);
+
+
+ALTER TABLE quantitative_questions 
+ADD CONSTRAINT fk_quantitative_questions_category 
+FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE;
 
 
 
@@ -378,11 +446,49 @@ VALUES
 (43, '개인정보 보호 조치가 산업별 규제를 따르고 있는가?', '산업 규제 준수 여부', '개인정보 보호법 제71조', 5);
 
 
+-- 문항별 각 평가 점수 다르게 설정
+UPDATE quantitative_questions 
+SET score_fulfilled = 3.2, score_unfulfilled = 0, score_consult = 1, score_not_applicable = 0
+WHERE question_number IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10); -- 핵심 문항 (최우선 중요)
+
+UPDATE quantitative_questions 
+SET score_fulfilled = 1.3, score_unfulfilled = 0, score_consult = 0.5, score_not_applicable = 0
+WHERE question_number IN (11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25); -- 중요 문항 (중간)
+
+UPDATE quantitative_questions 
+SET score_fulfilled = 0.47, score_unfulfilled = 0, score_consult = 0.2, score_not_applicable = 0
+WHERE question_number IN (26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43); -- 일반 문항 (우선순위 낮음)
+
+UPDATE quantitative_questions 
+SET score_fulfilled = 2, score_unfulfilled = 0, score_consult = 1, score_not_applicable = 0
+WHERE question_number IN (31, 32, 33, 34, 35, 36, 37, 38, 39, 40);
+
+UPDATE quantitative_questions 
+SET score_fulfilled = 1, score_unfulfilled = 0, score_consult = 1, score_not_applicable = 0
+WHERE question_number IN (41,42,43);
+
+
+UPDATE qualitative_questions 
+SET score_consult = 2, score_not_applicable = 0
+WHERE question_number IN (1, 2, 3, 4); -- 핵심 문항
+
+UPDATE qualitative_questions 
+SET score_consult = 1, score_not_applicable = 0
+WHERE question_number IN (5, 6, 7, 8); -- 중요 문항
+
+
+
+DELETE FROM SuperUser WHERE id = 1;
+
+ALTER TABLE SuperUser AUTO_INCREMENT = 1;
+
 
 
 -- 슈퍼유저 만들기
 INSERT INTO SuperUser (name, email, password, phone_number) 
-VALUES ('김동욱', 'test@test', '5397', '010-1234-5678');
+VALUES ('여상수', 'martin@martinlab.co.kr', '$2b$10$SvSvC8ZBCWMqKyXVrgDGte1wG6Wq/8NLUSNVjy/90GL3R1dsP2JsW','010-2743-0001');
+
+
 
 
 
@@ -390,16 +496,6 @@ VALUES ('김동욱', 'test@test', '5397', '010-1234-5678');
 SELECT * FROM systems s ;
 UPDATE SuperUser
 SET member_type = 'superuser';
-
-DELETE FROM SuperUser WHERE id = 1;
-
-ALTER TABLE SuperUser AUTO_INCREMENT = 1;
-
-
--- 슈퍼유저 만들기
-INSERT INTO SuperUser (name, email, password, phone_number) 
-VALUES ('여상수', 'martin@martinlab.co.kr', '$2b$10$SvSvC8ZBCWMqKyXVrgDGte1wG6Wq/8NLUSNVjy/90GL3R1dsP2JsW','010-2743-0001');
-
 
 -- 정량 응답 테이블 수정 (NULL 방지)
 ALTER TABLE quantitative_responses 

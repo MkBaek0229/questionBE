@@ -38,6 +38,7 @@ import {
   completeSelfTest,
   getAssessmentResults,
   getAssessmentStatuses,
+  getCategoryProtectionScores,
 } from "./routes/result.js";
 import {
   getAssignedSystems,
@@ -392,6 +393,9 @@ app.get("/selftest/feedback", requireAuth, getFeedbacks);
 app.post("/assessment/complete", csrfProtection, requireAuth, completeSelfTest);
 app.get("/assessment/result", requireAuth, getAssessmentResults);
 app.get("/assessment/status", requireAuth, getAssessmentStatuses);
+
+// ✅ 진단 분야별 보호 수준 조회 (현재 vs 최대)
+app.get("/category-scores/:systemId", getCategoryProtectionScores);
 // ✅ 에러 처리 미들웨어
 app.use((err, req, res, next) => {
   console.error(`서버 에러 발생 [${req.method} ${req.path}]:`, err);

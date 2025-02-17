@@ -227,4 +227,68 @@ const getAssessmentStatuses = async (req, res) => {
     });
   }
 };
-export { completeSelfTest, getAssessmentResults, getAssessmentStatuses };
+
+// ✅ 4. 진단 분야별 보호 수준 조회
+const getCategoryProtectionScores = async (req, res) => {
+  const { systemId } = req.params;
+
+  try {
+    // 현재 보호 수준 계산
+    const [currentScores] = await pool.query(
+      `
+          SELECT 
+              c.name AS category_name, 
+              AVG(
+                  CASE 
+                      WHEN qr.response = '이행' THEN qq.score_fulfilled
+                      WHEN qr.response = '자문필요' THEN qq.score_consult
+                      WHEN qr.response = '미이행' THEN qq.score_unfulfilled
+                      WHEN qr.response = '해당없음' THEN qq.score_not_applicable
+                      ELSE 0 
+                  END
+              ) AS avg_score
+          FROM quantitative_responses qr
+          JOIN quantitative_questions qq ON qr.question_id = qq.id
+          JOIN categories c ON qq.category_id = c.id
+          WHERE qr.systems_id = ?
+          GROUP BY c.name
+          ORDER BY avg_score DESC
+      `,
+      [systemId]
+    );
+
+    // 최대 보호 수준 계산
+    const [maxScores] = await pool.query(`
+          SELECT 
+              c.name AS category_name, 
+              MAX(qq.score_fulfilled) AS max_score
+          FROM quantitative_questions qq
+          JOIN categories c ON qq.category_id = c.id
+          GROUP BY c.name
+      `);
+
+    // 결과 매핑 (현재 보호 수준 vs 최대 보호 수준)
+    const categoryScores = currentScores.map((cs) => {
+      const maxScore =
+        maxScores.find((ms) => ms.category_name === cs.category_name)
+          ?.max_score || 5; // 기본 최대점수 5점
+      return {
+        category: cs.category_name,
+        currentScore: cs.avg_score,
+        maxScore: maxScore,
+      };
+    });
+
+    res.json(categoryScores);
+  } catch (error) {
+    console.error("❌ [ERROR] 분야별 보호 수준 조회 실패:", error);
+    res.status(500).json({ message: "서버 오류 발생", error: error.message });
+  }
+};
+
+export {
+  completeSelfTest,
+  getAssessmentResults,
+  getAssessmentStatuses,
+  getCategoryProtectionScores,
+};
