@@ -1,0 +1,5467 @@
+
+
+
+
+
+
+	<table border="0" style="width:630px;">
+	<tr>
+		<td align="center"><h1>개인정보보호 자가진단 결과확인</h1></td>
+	</tr>
+	<tr><td></td></tr>
+	<tr>
+		<td>
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+				<br>
+				<table border="0"><tr><td colspan="2"><h4>정책기반</h4></td></tr></table>
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">1. 개인정보보호 정책 및 자원</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>개인정보보호 업무를 수행하기 위한 조직이 구성되어 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보보호 활동을 수행하고 관리하는 인력들에 대한 책임, 권한 및 역할을 정의하여야 한다. 부서별 개인정보보호 업무를 총괄하여 수행할 수 있는 조직을 지정.운영하여 개인정보보호에 관한 예산 및 인력을 운영할 수 있도록 개인정보보호 업무담당자에게 책임과 권한을 부여한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>개인정보보호를 위한 기반이(예산편성 등)이 마련되어 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보보호를 위한 정책 추진의 필요성, 타당성 등을 검토하여 필요한 예산을 반영하여 지속적인 개인정보보호 업무를 추진하도록 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>개인정보 보호책임자가 지정되어 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보의 처리에 관한 업무를 총괄해서 관리하는 개인정보 보호책임자 직제를 신설하거나, 정보주체의 개인정보 보호업무를 위해 조직된 부서의 장 등을 지정해야 한다. 또는, 업무를 수행하는 부서(고객 응대, 마케팅, 경영지원 등)나 정보보호 업무를 수행하는 부서에서 본연의 업무와 동시에 개인정보와 관련된 정보주체의 고충처리를 담당하게 되는 경우 해당 부서의 장을 지정할 수도 있다. 조직 내에 정보보호(Security) 업무를 총괄하는 정보보호책임자(Chief Security Officer)가 별도로 있는 경우에는 기술적 조치에 관하여 상호간의 업무를 분명하게 분장하여야 한다. 개인정보처리자는 개인정보 보호책임자와 정보보호 책임자로 동일인을 지정할 수도 있다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>개인정보 보호책임자는 교육, 관리ㆍ감독 등 역할을 수행하고 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보 보호책임자(CPO)를 지정하고 적절한 책임, 권한 및 역할을 정의하여야 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>개인영상정보 보호책임자 지정 및 역할을 수행하고 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인영상정보의 처리에 관한 업무를 총괄해서 책임질 개인영상정보 보호책임자를 지정하여 개인정보 보호책임자의 업무에 준하여 업무를 수행하여야 한다.<br /><br> * 개인정보 보호책임자가 지정되어 있는 경우에는 그 개인정보 보호책임자가 개인영상정보 보호책임자의 업무를 수행할 수 있다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>개인정보의 안전한 처리를 위한 내부 관리계획이 수립되어 있는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>개인정보처리자가 내부감사(관리.감독 등)를 수행 하는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보처리자의 개인정보 보호체계가 계획된 절차에 따라 효과적으로 실행되는지를 점검하기 위하여 감사의 기준, 범위, 주기 및 방법을 규정하고, 계획된 주기로 내부감사를 수행하여야 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">2. 개인정보보호 교육</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>개인정보보호 교육계획이 수립되어 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보보호 교육의 목적은 안전하게 개인정보가 관리될 수 있도록 개인정보취급자의 개인정보보호에 대한 인식을 제고시키고 개인정보보호 대책의 필요성을 이해시키는 것이다. 교육대상(일반직원, 개인정보 취급자, 개인정보보호 담당자 등) 및 목적에 따라 교육내용을 차별화하고 일정 및 방법 등 구체적 사항을 명시해야 한다. 내부관리계획 또는 임직원의 결재를 얻은 “○○년 개인정보보호 교육 계획(안)”과 같은 문서를 통해 관리하여야 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>개인정보 보호책임자가 교육을 받고 있는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>개인정보보호 교육을 수행하고 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보보호 인식제고를 위해 교육·훈련을 실시하여야 한다. 일반직원, 개인정보 취급자, 개인정보보호 담당자 등(계약직 포함)을 대상으로 집합.사이버교육, 워크숍, 컨퍼런스 등 다양한 방식의 개인정보보호 교육을 선택·실시하도록 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">3. 개인정보처리방침</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>개인정보처리방침을 공개하고 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보처리자는 개인정보처리방침을 수립하여 정보주체가 언제든지 쉽게 확인할 수 있도록 적절한 방법에 따라 공개하여야 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>개인정보처리방침의 내용(처리 및 보유기간, 위탁사항 등)은 적절한가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보처리자는 개인정보보호법에 명시된 개인정보 관련 사항을 반영하여 개인정보처리방침을 작성하여야 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>개인정보처리방침의 변경 내용을 지속적으로 공개 및 이력관리를 하는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보 처리방침을 변경하는 경우에는 변경 및 시행의 시기, 변경된 내용을 인터넷 홈페이지 등을 통해 지속적으로 공개하여야 하며, 변경된 내용은 정보주체가 쉽게 확인할 수 있도록 변경 전?후를 비교하여 공개하여야 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">4. 개인정보 영향평가</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>개인정보 영향평가 대상인가? (이하 &#034;영향평가&#034;라 한다)</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										영향평가란 개인정보 관련 신규시스템 구축 또는 기존 시스템 변경 시 침해 요인을 분석하고 사전 예방 방법을 제시<br /><br> ※ 개인정보보호법 제33조에 공공기관은 개인정보 영향평가 수행 의무화<br /><br>< 영향평가 의무 수행 대상 : 법 시행령 제35조 ><br /><br>1. 5만 명 이상 민감정보(유전정보 등) 또는 고유식별번호(주민번호 등) 포함된 개인정보파일<br /><br>2. 다른 개인정보파일과 연계한 결과 50만 명 이상의 개인정보 포함된 개인정보파일<br /><br>3. 100만 명 이상의 개인정보 포함된 개인정보파일<br /><br>4. 영향평가를 받은 후, 개인정보 검색체계 등 변경하려는 파일(변경된 부분으로 한정)
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>대상이라면, 영향평가를 수행하는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										영향평가 대상 공공기관은 개인정보 영향평가를 수행하고 그 결과를 개인정보 보회위원회에 제출*하여야 합니다.<br />          <br> * 개인정보보호 종합지원시스템(intra.privacy.go.kr)에 결과보고서 등록
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+				<br>
+				<table border="0"><tr><td colspan="2"><h4>기술기반</h4></td></tr></table>
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">6. 개인정보처리시스템의 접근통제</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>계정정보 또는 비밀번호의 일정 횟수 이상 잘못 입력 시 접근제한 등 필요적 기술 조치를 하고 있는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>일정시간 이상의 업무처리 중지 시 자동 시스템 접속 차단을 실시하고 있는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">7. 개인정보 암호화</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>암호화된 개인정보의 안전한 보관을 위하여 안전한 암호키 생성, 이용, 보관, 배포 및 파기 등에 관한 절차를 수립ㆍ시행하고 있는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+				<br>
+				<table border="0"><tr><td colspan="2"><h4>수집</h4></td></tr></table>
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">10. 개인정보 수집 동의</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>개인정보 수집 시, 정보주체의 동의를 받고 있는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>만 14세 미만 아동의 개인정보를 수집 시, 법정대리인에게 동의를 받고 있는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>동의를 받는 방법은 적절한가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										만 14세 미만 아동의 개인정보를 처리하기 위해서는 법정대리인의 동의를 받아야 한다. 법정대리인의 성명.연락처를 수집할 때에는 해당 아동에게 자신의 신분과 연락처, 법정대리인의 성명과 연락처를 수집하고자 하는 이유를 알려야 한다. 법정대리인의 개인정보를 법정대리인의 동의를 얻기 위한 목적으로만 이용하여야 하며, 법정대리인의 동의 거부가 있거나 법정대리인의 동의 의사가 확인되지 않는 경우 수집일로부터 5일 이내에 파기해야 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>동의서 작성 시 「개인정보 수집ㆍ제공 동의서 작성 가이드라인」을 준수하고 있는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">11. 개인정보 수집</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>서비스 제공을 위해 꼭 필요한 최소한의 정보만을 수집하는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>정보주체 이외로부터 수집한 개인정보를 처리할 때, 정보주체에게 알려주는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+				<br>
+				<table border="0"><tr><td colspan="2"><h4>이용 및 제공</h4></td></tr></table>
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">12. 이용 및 제공</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>제3자 제공에 관한 사항을 정보주체에게 알리고 동의를 받는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>개인정보 수집 목적을 넘어 이용하거나 제공하는 경우, 별도동의를 받거나 다른 법률에 근거하고 있는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>영업양도, 합병 등으로 개인정보를 다른 사람에게 이전하는 경우, 정보주체에게 그 사실을 알리는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>개인정보의 국외 이전 시, 정보주체에게 알리고 동의를 받는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보처리자가 개인정보를 국외의 제3자에게 제공하고자 할 때에는 아래 예시의 내용을 정보주체에게 알리고 동의를 받아야 한다.국외의 제3자에게 개인정보를 제공하는 것은 물론이고, 개인정보처리를 국외의 제3자에게 위탁하는 경우, 영업의 양도.합병 등에 의하여 개인정보 데이터 베이스가 국외로 옮겨지는 경우도 모두 국외 이전에 포함된다. 이 경우에 각각의 규정에 따라 제공, 위탁, 양도 등의 절차를 밟으면 된다.<br /><br> * 제3자 제공형 : 해외 여행업을 하는 사업자가 외국 협력사에게 고객정보를 제공하는 경우, 다국적기업의 한국지사가 수집한 고객정보를 미국 본사로 이전하는 경우<br /><br> * 해외 위탁형 : 인건비가 저렴한 중국에 자회사를 설치하고 국내 고객DB를 이용해 콜센터업무(고객대응업무)를 대행시키는 경우<br /><br> * 영업 양도형 : 외국계 은행이 국내 은행을 흡수합병하고 국내 고객DB를 영국 본사DB와 통합한 경우
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>공공기관은 개인정보의 목적 외 이용 또는 제3자 제공에 관한 사항에 관한 공고를 하고 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										공공기관은 개인정보를 목적 외의 용도로 이용하거나 제3자에게 제공(이하 "목적 외 이용 등"이라 한다)하는 경우에는 「개인정보 보호법」제18조제4항에 따라 개인정보를 목적 외 이용 등을 한 날부터 30일 이내에 이 사항을 관보 또는 인터넷 홈페이지에 게재하여야 한다. 이 경우 인터넷 홈페이지에 게재할 때에는 10일 이상 계속 게재하되, 게재를 시작하는 날은 목적 외 이용 등을 한 날부터 30일 이내여야 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+				<br>
+				<table border="0"><tr><td colspan="2"><h4>개인정보파기</h4></td></tr></table>
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">13. 개인정보 파기</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>개인정보 처리목적 달성 시, 지체 없이 파기하고 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보처리자는 처리목적이 달성되거나, 해당 서비스 및 사업이 종료된 경우, 정당한 사유가 없는 한, 5일 이내에 개인정보를 파기하여야 한다.<br /><br> * 다른 법령에 따라 보존해야 하는 경우에는 개인정보처리자가 개인정보를 파기하지 않고 보존할 수 있으나, 그 법적 근거를 명확히 해야 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>개인정보를 파기할 때, 다시 복원하거나 재생할 수 없는 형태로 완벽하게 파기하는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>개인정보 파기에 관한 사항을 기록하고 관리하는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보처리자는 개인정보의 파기에 관한 사항을 기록하고 관리하여야 한다. 보유목적을 달성한 개인정보의 파기는 법적 의무사항이며 위반시 벌칙이 부과되는 사항이므로 파기는 반드시 개인정보 보호책임자의 책임하에 수행되어야 하며, 개인정보 보호책임자는 파기 결과를 확인하여야 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>다른 법령에 따라 개인정보를 파기하지 않고 보존하는 경우, 다른 개인정보와 분리하여서 저장·관리하는가?</td>
+						<td align="center">
+							
+								
+								
+								<strong>해당없음</strong>
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+				<br>
+				<table border="0"><tr><td colspan="2"><h4>개인정보파일</h4></td></tr></table>
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">14. 개인정보파일 등록 및 운영</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>개인정보파일을 운용하는 경우, 개인정보보호 종합지원시스템(intra.privacy.go.kr)에 등록 하였는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>개인정보파일 등록 시 모든 항목을 등록 하였는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보파일을 등록할 때에는 아래의 내용을 모두 등록하여야 한다. 또한 해당 개인정보파일에 대하여 개인정보 영향평가를 실시한 경우에는 그 결과를 함께 첨부하여야 한다.<br /><br> * 주의사항 : 개인정보파일을 과다하게 운영하지 않으며 적정성을 판단하여 등록한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>개인정보파일의 보유기간이 타당한가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보파일의 보유기간은 전체 개인정보가 아닌 개별 개인정보의 수집부터 삭제까지의 생애주기로서 보유목적에 부합된 최소기간으로 산정하되, 개별 법령의 규정에 명시된 자료의 보존기간에 따라 산정해야 한다. 개별 법령에 구체적인 보유기간이 명시되어 있지 않은 경우에는 개인정보 보호책임자의 협의를 거쳐 기관장의 결재를 통하여 산정해야 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>개인정보파일이 불필요하게 되었을 때 지체 없이 파기하는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보파일의 보유기간 경과, 처리목적 달성 등 개인정보파일이 불필요하게 되었을 때에는 지체 없이 그 개인정보파일을 파기하여야 한다. 다만, 다른 법령에 따라 보존하여야 하는 경우에는 그러하지 아니하다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+				<br>
+				<table border="0"><tr><td colspan="2"><h4>주민등록번호 처리제한</h4></td></tr></table>
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">16. 주민등록번호 처리 제한</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>주민등록번호 처리 현황에 대해 파악하고 있습니까?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+				<br>
+				<table border="0"><tr><td colspan="2"><h4>개인정보유출대응절차</h4></td></tr></table>
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">17. 개인정보 유·노출 대응절차</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>개인정보의 유ㆍ노출 및 침해사고에 대한 대응절차가 수립되어 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보 유.노출 및 침해사고를 통하여 발생할 수 있는 사회적, 경제적 피해 등 2차 피해를 예방하기 위하여 침해사고에 신속하고 효율적으로 대응할 수 있는 절차 마련이 필요하다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>당해년도에 개인정보 유출 또는 노출 사고가 발생하지 않았는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>개인정보 유출사고 발생에 따른 유출통지 및 신고를 하였는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+				<br>
+				<table border="0"><tr><td colspan="2"><h4>정보주체의 권리보장</h4></td></tr></table>
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">18. 정보주체의 권리보장</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>개인정보의 열람ㆍ정정ㆍ삭제 및 처리정지에 관한 사항을 안내하고 있습니까?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>다른 기관에서 개인정보를 제공받아 개인정보 정정.삭제 및 처리정지에 대한 사항 발생 시 보고조치를 수행하고 있습니까?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										다른 기관으로부터 개인정보를 제공받아 개인정보 정정.삭제 및 처리정지에 대한 사항 발생 시 해당 개인정보를 제공한 기관의 장에게 지체 없이 보내고 그 처리 결과에 따라 필요한 조치를 하도록 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+				<br>
+				<table border="0"><tr><td colspan="2"><h4>관리용 단말기 안전조치</h4></td></tr></table>
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">19. 관리용 단말기 안전조치</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>인가받지 않은 사람이 관리용 단말기에 접근하여 임의조작하지 못하도록 조치하고 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보처리자는 관리용 단말기에 대해 개인정보처리시스템의 관리, 운영, 개발, 보안 등의 목적으로 업무 처리를 하는 특정 직원 등에 한하여 접근을 허용하는 등 업무관련자 이외의 인가 받지 않는 사람이 관리용 단말기에 접근하여 임의로 조작하지 못하도록 접근통제 등의 안전조치를 하여야 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>관리용 단말기가 본래 목적 외로 사용되지 않도록 조치하고 있는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					<tr>
+						<td>관리용 단말기에 악성프로그램 감염 방지 등을 위한 보안조치를 적용하고 있는가?</td>
+						<td align="center">
+							
+								<span class="fontBlue">예</span>
+								
+								
+							
+						</td>
+					</tr>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+				<br>
+				<table border="0"><tr><td colspan="2"><h4>재해 및 재난 대비 개인정보처리시스템의 안전조치</h4></td></tr></table>
+			
+			
+			
+		
+			
+			
+			
+				<table border="1">
+					<thead>
+						<tr bgcolor="#E0FFFF">
+							<th align="left" scope="col">20. 재해 및 재난 대비 개인정보처리시스템의 안전조치</th>
+							<th scope="col">응답결과</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<tr>
+						<td>재해ㆍ재난 발생 시 개인정보처리시스템 보호를 위하여 대응절차 마련 및 점검을 하고 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보처리자는 화재, 홍수, 단전 등의 재해·재난 발생 시 개인정보처리시스템 보호를 위한 위기대응 매뉴얼 등 대응절차를 마련하고 정기적으로 점검하여야 한다
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					
+					<tr>
+						<td>재해ㆍ재난 발생 시에 대비하여 개인정보처리시스템 백업 및 복구를 위한 계획 마련하고 있는가?</td>
+						<td align="center">
+							
+								
+								<strong class="fontRed">아니요</strong>
+								
+							
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td colspan="2" class="rc">
+							<table style="border-style:hidden;" width="100%" border="0">
+							<tr>
+								<td colspan="2" style="border-bottom:0px;">
+									
+									
+									
+										
+										
+										개인정보처리자는 재해‧재난 발생 시 개인정보처리시스템 백업 및 복구를 위한 계획을 마련하여야 한다.
+									
+									
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					
+					
+					</tbody>
+				</table>
+				<br>
+			
+			
+		
+			
+			
+			
+			
+		
+			
+			
+			
+			
+		
+		</td>
+	</tr>
+	</table>
