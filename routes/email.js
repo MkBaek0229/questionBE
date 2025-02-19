@@ -243,6 +243,26 @@ const resetPassword = async (req, res) => {
 
     const userId = tokenData[0].user_id;
 
+    // ✅ 기존 비밀번호 가져오기
+    const [user] = await pool.query("SELECT password FROM User WHERE id = ?", [
+      userId,
+    ]);
+
+    if (user.length === 0) {
+      return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+    }
+
+    const existingPassword = user[0].password;
+
+    // ✅ 기존 비밀번호와 새 비밀번호 비교
+    const isSamePassword = await bcrypt.compare(password, existingPassword);
+    if (isSamePassword) {
+      return res.status(400).json({
+        message:
+          "새 비밀번호가 기존 비밀번호와 동일합니다. 다른 비밀번호를 입력해주세요.",
+      });
+    }
+
     // ✅ 비밀번호 해싱 후 저장
     const hashedPassword = await bcrypt.hash(password, 10);
     await pool.query("UPDATE User SET password = ? WHERE id = ?", [
