@@ -404,7 +404,10 @@ const SupergetQuantitativeResponses = async (req, res) => {
         qq.question, 
         qq.evaluation_criteria, 
         qq.legal_basis, 
-        qq.score,
+        qq.score_fulfilled, 
+        qq.score_unfulfilled, 
+        qq.score_consult, 
+        qq.score_not_applicable,
         COALESCE(qr.response, '-') AS response, 
         COALESCE(qr.additional_comment, '') AS additional_comment, 
         COALESCE(qr.file_path, '') AS file_path
@@ -431,7 +434,6 @@ const SupergetQuantitativeResponses = async (req, res) => {
     });
   }
 };
-
 /**
  * 🔹 슈퍼유저용 정성적 응답 조회 (특정 사용자 & 시스템)
  */
