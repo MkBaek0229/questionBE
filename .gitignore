@@ -10,4 +10,5 @@ coverage
 
 # Benchmarking
 benchmarks/graphs
-.env
+
+echo ".env"
