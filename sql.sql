@@ -104,7 +104,7 @@ CREATE TABLE systems (
     INDEX idx_assignment_id (assignment_id),
 
     -- ✅ 외래키 제약 조건 추가 (assignment 제외)
-    CONSTRAINT fk_systems_user FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
+    CONSTRAINT fk_systems_user FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
 );
 
 
@@ -133,7 +133,7 @@ CREATE TABLE self_assessment (
 
     -- ✅ 외래키 제약 조건 추가
     FOREIGN KEY (systems_id) REFERENCES systems(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
 );
 
 
