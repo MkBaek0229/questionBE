@@ -1,10 +1,10 @@
 -- 데이터베이스 설정
-DROP DATABASE IF EXISTS test2;
-CREATE DATABASE test2;
-USE test2;
+DROP DATABASE IF EXISTS compliance;
+CREATE DATABASE compliance;
+USE compliance;
 
 -- 데이터베이스 설정
-ALTER DATABASE test2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER DATABASE compliance CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 SHOW tables;
 
 -- 회원 테이블
