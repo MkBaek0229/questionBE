@@ -309,7 +309,7 @@ CREATE TABLE feedback (
     -- ✅ 관계 설정 (정량/정성 응답 테이블을 각각 참조)
     FOREIGN KEY (systems_id) REFERENCES systems(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE,
-    FOREIGN KEY (expert_id) REFERENCES Expert(id) ON DELETE CASCADE,
+    FOREIGN KEY (expert_id) REFERENCES expert(id) ON DELETE CASCADE,
     FOREIGN KEY (quantitative_response_id) REFERENCES quantitative_responses(id) ON DELETE CASCADE,
     FOREIGN KEY (qualitative_response_id) REFERENCES qualitative_responses(id) ON DELETE CASCADE
 );
