@@ -1,28 +1,31 @@
-name: Deploy to Ubuntu Server
+name: Deploy Backend
 
 on:
   push:
     branches:
-      - main
+      - main # main 브랜치에 Push될 때만 실행
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Repository Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v3
+
+      - name: Debug - List directory contents
+        run: |
+          pwd
+          ls -lah
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Install Dependencies & Build Frontend
+      - name: Install Dependencies & Start Server
         run: |
-          cd frontend
           npm install
-          npm run build
 
       - name: Deploy to Server via SSH
         uses: appleboy/ssh-action@master
@@ -31,11 +34,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/${{ secrets.SERVER_USER }}/project
+            cd /home/bmk/QuestionBE
             git pull origin main
-            cd backend
             npm install
             pm2 restart all
-            cd ../frontend
-            cp -r build /var/www/html
-            sudo systemctl restart nginx
