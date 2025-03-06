@@ -25,3 +25,6 @@ jobs:
             git pull origin main
             npm install
             pm2 restart all
+
+  name: Debug Server Host
+  run: echo "SERVER_HOST=${{ secrets.SERVER_HOST }}"
