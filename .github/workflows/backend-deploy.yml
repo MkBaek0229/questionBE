@@ -3,7 +3,7 @@ name: Backend Deployment
 on:
   push:
     branches:
-      - main # 메인 브랜치가 변경될 때 실행
+      - main
 
 jobs:
   deploy:
@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /home/bmk/questionBE  # 백엔드 폴더 이동
+            cd /home/ubuntu/backend
             git pull origin main
             npm install
-            pm2 restart backend  # PM2로 Node.js 서버 재시
+            pm2 restart all
