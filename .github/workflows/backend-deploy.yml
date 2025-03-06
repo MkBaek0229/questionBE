@@ -17,4 +17,4 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            echo "✅ SSH 연결 성공!"
+            echo "✅ SSH 연결 success"
