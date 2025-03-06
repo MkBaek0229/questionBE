@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Debug Secrets - Check SERVER_HOST
+        run: echo "SERVER_HOST=${{ secrets.SERVER_HOST }}"
 
       - name: Deploy to server
         uses: appleboy/ssh-action@master
@@ -20,6 +20,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            echo "✅ SSH 연결 시도 중..."
             cd /home/ubuntu/backend
             git pull origin main
             npm install
