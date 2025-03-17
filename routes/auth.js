@@ -1,127 +1,18 @@
-import bcrypt from "bcrypt";
-import pool from "../db/connection.js"; // DB 연결 파일
+import express from "express";
+import {
+  register,
+  login,
+  logout,
+  getUserInfo,
+} from "../controllers/authController.js";
+import validateUserInput from "../middlewares/validation.js";
+import csrfProtection from "../middlewares/csrf.js";
 
-// 회원가입
-const register = async (req, res) => {
-  const {
-    institution_name,
-    institution_address,
-    representative_name,
-    email,
-    password,
-    phone_number,
-  } = req.body;
+const router = express.Router();
 
-  console.log("📩 받은 데이터:", req.body); // ✅ 디버깅 로그 추가
+router.post("/register", validateUserInput, csrfProtection, register);
+router.post("/login", csrfProtection, login);
+router.post("/logout", csrfProtection, logout);
+router.get("/user", getUserInfo);
 
-  try {
-    const [existingUser] = await pool.query(
-      "SELECT * FROM User WHERE email = ?",
-      [email]
-    );
-    if (existingUser.length > 0) {
-      return res.status(400).json({ message: "이미 사용 중인 이메일입니다." });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await pool.query(
-      `INSERT INTO User (institution_name, institution_address, representative_name, email, password, phone_number)
-        VALUES (?, ?, ?, ?, ?, ?)`,
-      [
-        institution_name,
-        institution_address,
-        representative_name,
-        email,
-        hashedPassword,
-        phone_number,
-      ]
-    );
-
-    res.status(201).json({ message: "회원가입 성공!" });
-  } catch (err) {
-    console.error("회원가입 실패:", err); // 오류 로그 추가
-    res.status(500).json({ message: "회원가입 실패", error: err.message });
-  }
-};
-
-// 로그인
-const login = async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const [user] = await pool.query("SELECT * FROM User WHERE email = ?", [
-      email,
-    ]);
-    if (!user || user.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "이메일 또는 비밀번호가 잘못되었습니다." });
-    }
-
-    const isMatch = await bcrypt.compare(password, user[0].password);
-    if (!isMatch) {
-      return res
-        .status(400)
-        .json({ message: "이메일 또는 비밀번호가 잘못되었습니다." });
-    }
-
-    // 🔥 세션 재생성 (세션 ID 변경)
-    req.session.regenerate((err) => {
-      if (err) {
-        console.error("세션 재생성 오류:", err);
-        return res.status(500).json({ message: "서버 오류 발생" });
-      }
-
-      req.session.user = {
-        id: user[0].id,
-        email: user[0].email,
-        name: user[0].representative_name,
-        member_type: "user",
-      };
-
-      res.status(200).json({
-        resultCode: "S-1",
-        message: "로그인 성공",
-        data: req.session.user,
-      });
-    });
-  } catch (error) {
-    console.error("❌ [USER LOGIN] 로그인 오류:", error);
-    res
-      .status(500)
-      .json({ resultCode: "F-1", msg: "서버 에러 발생", error: error.message });
-  }
-};
-
-// 로그아웃
-const logout = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("❌ [LOGOUT] 로그아웃 실패:", err);
-      return res.status(500).json({ message: "로그아웃 실패" });
-    }
-
-    // 🔥 쿠키 제거 (보안 강화)
-    res.clearCookie("connect.sid", {
-      path: "/",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
-
-    // 🔥 캐시 무효화 (Back 버튼 방지)
-    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
-
-    res.status(200).json({ message: "로그아웃 성공" });
-  });
-};
-
-// 사용자 정보 가져오기
-const getUserInfo = (req, res) => {
-  if (!req.session || !req.session.user) {
-    return res.status(401).json({ message: "로그인이 필요합니다." });
-  }
-  res.status(200).json({ user: req.session.user });
-};
-
-export { register, login, logout, getUserInfo };
+export default router;
