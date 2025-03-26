@@ -138,6 +138,25 @@ const getAllSystemsService = async () => {
   return systems;
 };
 
+const getSystemSummaryService = async (userId) => {
+  const query = `
+    SELECT 
+      s.id AS systems_id,
+      s.name AS system_name,
+      s.purpose,
+      ar.completed_at AS last_assessment_date,
+      ar.score AS compliance_rate,
+      ar.feedback_status
+    FROM systems s
+    INNER JOIN assessment_result ar
+      ON s.id = ar.systems_id AND ar.user_id = ?
+    WHERE s.user_id = ?
+    ORDER BY ar.completed_at DESC
+  `;
+  const [rows] = await pool.query(query, [userId, userId]);
+  return rows;
+};
+
 export {
   postsystemService,
   getsystemsService,
@@ -145,4 +164,5 @@ export {
   updateSystemService,
   deleteSystemService,
   getAllSystemsService,
+  getSystemSummaryService,
 };

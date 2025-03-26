@@ -1,5 +1,5 @@
 export const requireAuth = (req, res, next) => {
-  if (!req.session?.user && !req.session?.expert && !req.session?.superuser) {
+  if (!req.session?.user && !req.session?.expert) {
     return res.status(401).json({ message: "로그인이 필요합니다." });
   }
   next();

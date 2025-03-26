@@ -10,11 +10,13 @@ import { fileURLToPath } from "url";
 import csrfMiddleware from "../middlewares/csrf.js";
 import errorHandler from "../middlewares/errorHandler.js"; // 에러 핸들링 미들웨어 추가
 
-dotenv.config({ path: "questionBE/config/.env" }); // ⬅ `.env` 파일 경로 명시
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const envFile =
+  process.env.NODE_ENV === "production" ? ".env.docker" : ".env.development";
+
+dotenv.config({ path: path.join(__dirname, envFile) });
 const app = express();
 
 // ✅ 미들웨어 설정
@@ -31,7 +33,8 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      maxAge: 1000 * 60 * 60, // 1시간 세션 유지
+      sameSite: "lax",
     },
   })
 );

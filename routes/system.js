@@ -6,6 +6,7 @@ import {
   updateSystem,
   deleteSystem,
   getAllSystems,
+  getSystemSummary,
 } from "../controllers/systemController.js";
 import csrfProtection from "../middlewares/csrf.js";
 
@@ -17,5 +18,6 @@ router.get("/system/:id", csrfProtection, getSystemById);
 router.put("/system/:id", csrfProtection, updateSystem);
 router.delete("/system/:id", csrfProtection, deleteSystem);
 router.get("/all-systems", csrfProtection, getAllSystems);
+router.get("/summary", csrfProtection, getSystemSummary);
 
 export default router;

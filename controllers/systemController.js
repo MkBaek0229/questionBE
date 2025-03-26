@@ -5,6 +5,7 @@ import {
   updateSystemService,
   deleteSystemService,
   getAllSystemsService,
+  getSystemSummaryService,
 } from "../services/systemService.js";
 import AppError from "../utils/appError.js";
 
@@ -83,6 +84,20 @@ const getAllSystems = async (req, res, next) => {
   }
 };
 
+const getSystemSummary = async (req, res, next) => {
+  try {
+    const user = req.session.user;
+    if (!user) {
+      return next(new AppError("로그인이 필요합니다.", 401));
+    }
+
+    const summary = await getSystemSummaryService(user.id);
+    res.status(200).json(summary);
+  } catch (error) {
+    next(new AppError("시스템 요약 정보 조회 실패: " + error.message, 500));
+  }
+};
+
 export {
   postsystem,
   getsystems,
@@ -90,4 +105,5 @@ export {
   updateSystem,
   deleteSystem,
   getAllSystems,
+  getSystemSummary,
 };

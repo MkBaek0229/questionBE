@@ -260,7 +260,7 @@ const SystemsResultService = async ({ userId }) => {
   const query = `
     SELECT s.id AS systems_id, s.name AS system_name, 
            ar.score, ar.grade, ar.feedback_status, ar.completed_at,
-           f.feedback_content, e.name AS expert_name
+           f.feedback AS feedback_content, e.name AS expert_name
     FROM systems s
     LEFT JOIN assessment_result ar ON s.id = ar.systems_id
     LEFT JOIN assignment a ON s.id = a.systems_id

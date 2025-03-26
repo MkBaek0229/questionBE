@@ -53,31 +53,27 @@ const loginUser = async ({ email, password }) => {
     name: user[0].representative_name,
   };
 };
-
-const logoutUser = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ message: "로그아웃 실패" });
-    }
-
-    res.clearCookie("connect.sid", {
-      path: "/",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+const logoutUser = async (req) => {
+  return new Promise((resolve, reject) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return reject(new Error("세션 삭제 실패"));
+      }
+      resolve("세션 삭제 성공");
     });
-
-    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
-
-    res.status(200).json({ message: "로그아웃 성공" });
   });
 };
 
-const getUserInfoService = (req, res) => {
-  if (!req.session || !req.session.user) {
-    return res.status(401).json({ message: "로그인이 필요합니다." });
+const getUserInfoService = async (userId) => {
+  // userId로 DB 조회 (예: MySQL)
+  const [rows] = await pool.query(
+    "SELECT id, email, representative_name AS name FROM User WHERE id = ?",
+    [userId]
+  );
+  if (!rows || rows.length === 0) {
+    throw new Error("사용자를 찾을 수 없습니다.");
   }
-  res.status(200).json({ user: req.session.user });
+  return rows[0];
 };
 
 export { registerUser, loginUser, logoutUser, getUserInfoService };

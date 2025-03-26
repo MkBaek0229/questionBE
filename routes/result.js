@@ -4,6 +4,8 @@ import {
   getAssessmentResults,
   getAssessmentStatuses,
   getCategoryProtectionScores,
+  getDiagnosisRounds,
+  getResultByRound,
 } from "../controllers/resultController.js";
 import csrfProtection from "../middlewares/csrf.js";
 
@@ -17,5 +19,6 @@ router.get(
   csrfProtection,
   getCategoryProtectionScores
 );
-
+router.get("/rounds", csrfProtection, getDiagnosisRounds);
+router.get("/round-result", csrfProtection, getResultByRound);
 export default router;

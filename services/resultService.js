@@ -1,8 +1,6 @@
 import pool from "../config/db.js";
 
-const calculateAssessmentScore = async (systemId) => {
-  console.log("Calculating score for systemId:", systemId);
-
+const calculateAssessmentScore = async (systemId, diagnosisRound) => {
   const queryQuantitative = `
     SELECT qr.response, 
            qq.score_fulfilled, 
@@ -11,7 +9,7 @@ const calculateAssessmentScore = async (systemId) => {
            qq.score_not_applicable
     FROM quantitative_responses qr
     JOIN quantitative_questions qq ON qr.question_id = qq.id
-    WHERE qr.systems_id = ?;
+    WHERE qr.systems_id = ? AND qr.diagnosis_round = ?;
   `;
 
   const queryQualitative = `
@@ -20,14 +18,18 @@ const calculateAssessmentScore = async (systemId) => {
            qq.score_not_applicable
     FROM qualitative_responses qr
     JOIN qualitative_questions qq ON qr.question_id = qq.id
-    WHERE qr.systems_id = ?;
+    WHERE qr.systems_id = ? AND qr.diagnosis_round = ?;
   `;
 
   try {
     const [quantitativeResults] = await pool.query(queryQuantitative, [
       systemId,
+      diagnosisRound,
     ]);
-    const [qualitativeResults] = await pool.query(queryQualitative, [systemId]);
+    const [qualitativeResults] = await pool.query(queryQualitative, [
+      systemId,
+      diagnosisRound,
+    ]);
 
     console.log("Quantitative results:", quantitativeResults);
     console.log("Qualitative results:", qualitativeResults);
@@ -100,6 +102,14 @@ const completeSelfTestService = async ({ systemId, userId }) => {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
+    const [roundRow] = await connection.query(
+      `SELECT MAX(diagnosis_round) AS max_round
+       FROM assessment_result
+       WHERE user_id = ? AND systems_id = ?`,
+      [userId, systemId]
+    );
+    const nextDiagnosisRound = (roundRow[0].max_round || 0) + 1;
+
     const [selfAssessmentResult] = await connection.query(
       "SELECT id FROM self_assessment WHERE systems_id = ? AND user_id = ?",
       [systemId, userId]
@@ -117,12 +127,15 @@ const completeSelfTestService = async ({ systemId, userId }) => {
     const assessmentId = selfAssessmentResult[0].id;
     console.log("✅ [DEBUG] Retrieved assessment_id:", assessmentId);
 
-    const { score, grade } = await calculateAssessmentScore(systemId);
+    const { score, grade } = await calculateAssessmentScore(
+      systemId,
+      nextDiagnosisRound
+    );
     console.log("✅ [DEBUG] 계산된 점수 및 등급:", { score, grade });
 
     const query = `
-      INSERT INTO assessment_result (systems_id, user_id, assessment_id, score, feedback_status, completed_at, grade)
-      VALUES (?, ?, ?, ?, '전문가 자문이 반영되기전입니다', NOW(), ?)
+      INSERT INTO assessment_result (systems_id, user_id, assessment_id, score, feedback_status, completed_at, grade,  diagnosis_round)
+      VALUES (?, ?, ?, ?, '전문가 자문이 반영되기전입니다', NOW(), ?, ?)
       ON DUPLICATE KEY UPDATE
       score = VALUES(score),
       feedback_status = VALUES(feedback_status),
@@ -130,10 +143,24 @@ const completeSelfTestService = async ({ systemId, userId }) => {
       grade = VALUES(grade);
     `;
 
-    const values = [systemId, userId, assessmentId, score, grade];
+    const values = [
+      systemId,
+      userId,
+      assessmentId,
+      score,
+      grade,
+      nextDiagnosisRound,
+    ];
     console.log("📡 [DEBUG] 실행할 쿼리:", query, "params:", values);
 
     await connection.query(query, values);
+
+    await connection.query(
+      `UPDATE systems 
+       SET assessment_status = '완료' 
+       WHERE id = ? AND assessment_status != '완료'`,
+      [systemId]
+    );
 
     await connection.commit();
     console.log("✅ [DEBUG] 자가진단 결과가 성공적으로 저장됨");
@@ -239,9 +266,44 @@ const getCategoryProtectionScoresService = async ({ systemId }) => {
   return categoryScores;
 };
 
+const getDiagnosisRoundsService = async ({ userId, systemId }) => {
+  if (!userId || !systemId) throw new Error("필수 정보 누락");
+
+  const [rows] = await pool.query(
+    `SELECT diagnosis_round, completed_at
+     FROM assessment_result
+     WHERE user_id = ? AND systems_id = ?
+     ORDER BY diagnosis_round DESC`,
+    [userId, systemId]
+  );
+
+  return rows;
+};
+
+const getResultByRoundService = async ({
+  userId,
+  systemId,
+  diagnosisRound,
+}) => {
+  if (!userId || !systemId || !diagnosisRound)
+    throw new Error("필수 정보 누락");
+
+  const [rows] = await pool.query(
+    `SELECT * FROM assessment_result
+     WHERE user_id = ? AND systems_id = ? AND diagnosis_round = ?`,
+    [userId, systemId, diagnosisRound]
+  );
+
+  if (rows.length === 0) throw new Error("해당 회차 결과 없음");
+
+  return rows[0];
+};
+
 export {
   completeSelfTestService,
   getAssessmentResultsService,
   getAssessmentStatusesService,
   getCategoryProtectionScoresService,
+  getDiagnosisRoundsService,
+  getResultByRoundService,
 };

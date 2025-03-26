@@ -3,6 +3,8 @@ import {
   getAssessmentResultsService,
   getAssessmentStatusesService,
   getCategoryProtectionScoresService,
+  getDiagnosisRoundsService,
+  getResultByRoundService,
 } from "../services/resultService.js";
 import AppError from "../utils/appError.js";
 
@@ -17,7 +19,10 @@ const completeSelfTest = async (req, res, next) => {
 
 const getAssessmentResults = async (req, res, next) => {
   try {
-    const results = await getAssessmentResultsService(req.query);
+    const userId = req.session.userId; // ✅ 세션에서 추출
+    const systemId = req.query.systemId;
+
+    const results = await getAssessmentResultsService({ userId, systemId });
     res.status(200).json(results);
   } catch (error) {
     next(new AppError("진단 결과 조회 실패: " + error.message, 500));
@@ -41,10 +46,43 @@ const getCategoryProtectionScores = async (req, res, next) => {
     next(new AppError("카테고리 보호 점수 조회 실패: " + error.message, 500));
   }
 };
+const getDiagnosisRounds = async (req, res, next) => {
+  try {
+    const userId = req.session.user?.id;
+    const { systemId } = req.query;
+
+    if (!userId) {
+      throw new Error("로그인이 필요합니다.");
+    }
+
+    const result = await getDiagnosisRoundsService({ userId, systemId });
+    res.status(200).json(result);
+  } catch (error) {
+    next(new AppError("회차 목록 조회 실패: " + error.message, 500));
+  }
+};
+
+const getResultByRound = async (req, res, next) => {
+  try {
+    const userId = req.session.user?.id; // ✅ 세션에서 userId 가져오기
+    const { systemId, diagnosisRound } = req.query;
+
+    const result = await getResultByRoundService({
+      userId,
+      systemId,
+      diagnosisRound,
+    });
+    res.status(200).json(result);
+  } catch (error) {
+    next(new AppError("특정 회차 결과 조회 실패: " + error.message, 500));
+  }
+};
 
 export {
   completeSelfTest,
   getAssessmentResults,
   getAssessmentStatuses,
   getCategoryProtectionScores,
+  getDiagnosisRounds,
+  getResultByRound,
 };

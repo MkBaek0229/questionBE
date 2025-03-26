@@ -11,6 +11,7 @@ const handleSelfAssessmentSaveService = async (data, userId) => {
     taskOutsourcing,
     personalInfoDisposal,
     systemId,
+    diagnosisRound,
   } = data;
 
   if (!userId) {
@@ -63,7 +64,11 @@ const handleSelfAssessmentSaveService = async (data, userId) => {
   ];
 
   await pool.query(query, values);
-  return { message: "Self-assessment saved successfully." };
+
+  return {
+    message: "Self-assessment saved successfully.",
+    diagnosisRound: diagnosisRound || 1,
+  };
 };
 
 const submitQuantitativeResponsesService = async (data, userId) => {
@@ -77,7 +82,7 @@ const submitQuantitativeResponsesService = async (data, userId) => {
     throw new Error("Invalid responses format.");
   }
 
-  const requiredFields = ["systemId", "userId", "questionId", "response"];
+  const requiredFields = ["systemId", "questionId", "response"];
   let missingResponse = null;
 
   responses.forEach((res, index) => {
@@ -100,15 +105,26 @@ const submitQuantitativeResponsesService = async (data, userId) => {
       [res.questionId]
     );
     if (!question) continue;
-    const query = `INSERT INTO quantitative_responses (systems_id, user_id, question_id, response, additional_comment, file_path)
-                   VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE response=VALUES(response), additional_comment=VALUES(additional_comment);`;
+    const query = `
+  INSERT INTO quantitative_responses (
+    systems_id, user_id, question_id, response, additional_comment, file_path, diagnosis_round
+  )
+  VALUES (?, ?, ?, ?, ?, ?, ?)
+  ON DUPLICATE KEY UPDATE
+    response = VALUES(response),
+    additional_comment = VALUES(additional_comment),
+    file_path = VALUES(file_path),
+    diagnosis_round = VALUES(diagnosis_round);
+`;
+
     await pool.query(query, [
       res.systemId,
-      res.userId,
+      userId,
       question.id,
       res.response,
       res.additionalComment || "",
       res.filePath || null,
+      res.diagnosisRound || 1, // ✅ 회차 포함 OK
     ]);
   }
   return { message: "정량 응답이 성공적으로 저장되었습니다." };
@@ -119,6 +135,8 @@ const submitQualitativeResponsesService = async (data) => {
     throw new Error("응답 데이터가 유효하지 않습니다.");
   }
 
+  const diagnosisRound = data.responses[0]?.diagnosisRound || 1;
+
   const values = data.responses.map((response) => [
     response.systemId,
     response.userId,
@@ -126,16 +144,20 @@ const submitQualitativeResponsesService = async (data) => {
     response.response,
     response.additionalComment || null,
     response.filePath || null,
+    diagnosisRound,
   ]);
 
   const query = `
     INSERT INTO qualitative_responses
-    (systems_id, user_id, question_id, response, additional_comment, file_path)
+    (systems_id, user_id, question_id, response, additional_comment, file_path, diagnosis_round)
     VALUES ?
     ON DUPLICATE KEY UPDATE
     response = VALUES(response),
     additional_comment = VALUES(additional_comment),
-    file_path = VALUES(file_path);
+    file_path = VALUES(file_path),
+    diagnosis_round = VALUES(diagnosis_round);
+;
+
   `;
 
   await pool.query(query, [values]);
@@ -170,6 +192,8 @@ const getQuantitativeResponsesService = async ({ systemId, userId }) => {
       ON qq.id = qr.question_id 
       AND qr.systems_id = ? 
       AND qr.user_id = ?
+      AND qr.diagnosis_round = ?
+
     ORDER BY qq.question_number;
   `;
 
@@ -193,6 +217,8 @@ const getQualitativeResponsesService = async ({ systemId, userId }) => {
       ON qq.id = qr.question_id 
       AND qr.systems_id = ? 
       AND qr.user_id = ?
+      AND qr.diagnosis_round = ?
+
     ORDER BY qq.question_number;
   `;
 
@@ -263,6 +289,24 @@ const updateQualitativeQuestionService = async (data) => {
   return { message: "정성 문항 업데이트 성공" };
 };
 
+const getNextDiagnosisRoundService = async (userId, systemsId) => {
+  // 시스템 존재 여부 확인
+  const [system] = await pool.query("SELECT id FROM systems WHERE id = ?", [
+    systemsId,
+  ]);
+  if (system.length === 0) {
+    throw new Error("해당 시스템이 존재하지 않습니다.");
+  }
+
+  const [rows] = await pool.query(
+    `SELECT MAX(diagnosis_round) AS max_round
+     FROM assessment_result
+     WHERE user_id = ? AND systems_id = ?`,
+    [userId, systemsId]
+  );
+  return (rows[0].max_round || 0) + 1;
+};
+
 export {
   handleSelfAssessmentSaveService,
   submitQuantitativeResponsesService,
@@ -273,4 +317,5 @@ export {
   getQualitativeResponsesService,
   updateQuantitativeQuestionService,
   updateQualitativeQuestionService,
+  getNextDiagnosisRoundService,
 };
