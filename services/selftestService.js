@@ -34,21 +34,21 @@ const handleSelfAssessmentSaveService = async (data, userId) => {
   }
 
   const query = `
-    INSERT INTO self_assessment (
-      user_id, systems_id, organization, user_scale, personal_info_system,
-      member_info_homepage, external_data_provision, cctv_operation,
-      task_outsourcing, personal_info_disposal
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ON DUPLICATE KEY UPDATE
-      organization = VALUES(organization),
-      user_scale = VALUES(user_scale),
-      personal_info_system = VALUES(personal_info_system),
-      member_info_homepage = VALUES(member_info_homepage),
-      external_data_provision = VALUES(external_data_provision),
-      cctv_operation = VALUES(cctv_operation),
-      task_outsourcing = VALUES(task_outsourcing),
-      personal_info_disposal = VALUES(personal_info_disposal)
-  `;
+      INSERT INTO self_assessment (
+        user_id, systems_id, organization, user_scale, personal_info_system,
+        member_info_homepage, external_data_provision, cctv_operation,
+        task_outsourcing, personal_info_disposal
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        organization = VALUES(organization),
+        user_scale = VALUES(user_scale),
+        personal_info_system = VALUES(personal_info_system),
+        member_info_homepage = VALUES(member_info_homepage),
+        external_data_provision = VALUES(external_data_provision),
+        cctv_operation = VALUES(cctv_operation),
+        task_outsourcing = VALUES(task_outsourcing),
+        personal_info_disposal = VALUES(personal_info_disposal)
+    `;
 
   const values = [
     userId,
@@ -106,16 +106,16 @@ const submitQuantitativeResponsesService = async (data, userId) => {
     );
     if (!question) continue;
     const query = `
-  INSERT INTO quantitative_responses (
-    systems_id, user_id, question_id, response, additional_comment, file_path, diagnosis_round
-  )
-  VALUES (?, ?, ?, ?, ?, ?, ?)
-  ON DUPLICATE KEY UPDATE
-    response = VALUES(response),
-    additional_comment = VALUES(additional_comment),
-    file_path = VALUES(file_path),
-    diagnosis_round = VALUES(diagnosis_round);
-`;
+    INSERT INTO quantitative_responses (
+      systems_id, user_id, question_id, response, additional_comment, file_path, diagnosis_round
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+      response = VALUES(response),
+      additional_comment = VALUES(additional_comment),
+      file_path = VALUES(file_path),
+      diagnosis_round = VALUES(diagnosis_round);
+  `;
 
     await pool.query(query, [
       res.systemId,
@@ -148,17 +148,17 @@ const submitQualitativeResponsesService = async (data) => {
   ]);
 
   const query = `
-    INSERT INTO qualitative_responses
-    (systems_id, user_id, question_id, response, additional_comment, file_path, diagnosis_round)
-    VALUES ?
-    ON DUPLICATE KEY UPDATE
-    response = VALUES(response),
-    additional_comment = VALUES(additional_comment),
-    file_path = VALUES(file_path),
-    diagnosis_round = VALUES(diagnosis_round);
-;
+      INSERT INTO qualitative_responses
+      (systems_id, user_id, question_id, response, additional_comment, file_path, diagnosis_round)
+      VALUES ?
+      ON DUPLICATE KEY UPDATE
+      response = VALUES(response),
+      additional_comment = VALUES(additional_comment),
+      file_path = VALUES(file_path),
+      diagnosis_round = VALUES(diagnosis_round);
+  ;
 
-  `;
+    `;
 
   await pool.query(query, [values]);
 
@@ -178,37 +178,51 @@ const getQualitativeQuestionsService = async () => {
 };
 
 const getQuantitativeResponsesService = async ({ systemId, userId }) => {
+  // 가장 최근 회차 조회
+  const [roundResult] = await pool.query(
+    `SELECT MAX(diagnosis_round) as max_round FROM quantitative_responses 
+     WHERE systems_id = ? AND user_id = ?`,
+    [systemId, userId]
+  );
+  const diagnosisRound = roundResult[0]?.max_round || 1;
+
   const query = `
     SELECT 
       qq.question_number, 
-      qq.question, 
-      qq.evaluation_criteria, 
-      qq.legal_basis, 
+      qq.question,
       COALESCE(qr.response, '-') AS response, 
       COALESCE(qr.additional_comment, '') AS additional_comment, 
-      COALESCE(qr.file_path, '') AS file_path
+      COALESCE(qr.file_path, '') AS file_path,
+      c.name AS category_name
     FROM quantitative_questions qq
     LEFT JOIN quantitative_responses qr 
       ON qq.id = qr.question_id 
       AND qr.systems_id = ? 
       AND qr.user_id = ?
       AND qr.diagnosis_round = ?
-
+    LEFT JOIN categories c ON qq.category_id = c.id
     ORDER BY qq.question_number;
   `;
 
-  const [results] = await pool.query(query, [systemId, userId]);
+  const [results] = await pool.query(query, [systemId, userId, diagnosisRound]);
   return results;
 };
 
 const getQualitativeResponsesService = async ({ systemId, userId }) => {
+  // 가장 최근 회차 조회
+  const [roundResult] = await pool.query(
+    `SELECT MAX(diagnosis_round) as max_round FROM qualitative_responses 
+     WHERE systems_id = ? AND user_id = ?`,
+    [systemId, userId]
+  );
+  const diagnosisRound = roundResult[0]?.max_round || 1;
+
+  // 카테고리 JOIN 부분 수정 - qualitative_questions 테이블의 컬럼명 확인 필요
   const query = `
     SELECT 
       qq.question_number, 
-      qq.indicator, 
+      qq.indicator,
       qq.indicator_definition, 
-      qq.evaluation_criteria, 
-      qq.reference_info,
       COALESCE(qr.response, '-') AS response, 
       COALESCE(qr.additional_comment, '') AS additional_comment, 
       COALESCE(qr.file_path, '') AS file_path
@@ -218,11 +232,10 @@ const getQualitativeResponsesService = async ({ systemId, userId }) => {
       AND qr.systems_id = ? 
       AND qr.user_id = ?
       AND qr.diagnosis_round = ?
-
     ORDER BY qq.question_number;
   `;
 
-  const [results] = await pool.query(query, [systemId, userId]);
+  const [results] = await pool.query(query, [systemId, userId, diagnosisRound]);
   return results;
 };
 
@@ -235,10 +248,10 @@ const updateQuantitativeQuestionService = async (data) => {
   }
 
   const query = `
-    UPDATE quantitative_questions
-    SET question = ?, evaluation_criteria = ?, legal_basis = ?, category_id = ?
-    WHERE id = ?;
-  `;
+      UPDATE quantitative_questions
+      SET question = ?, evaluation_criteria = ?, legal_basis = ?, category_id = ?
+      WHERE id = ?;
+    `;
 
   const [result] = await pool.query(query, [
     question,
@@ -269,10 +282,10 @@ const updateQualitativeQuestionService = async (data) => {
   }
 
   const query = `
-    UPDATE qualitative_questions
-    SET indicator = ?, indicator_definition = ?, evaluation_criteria = ?, reference_info = ?
-    WHERE id = ?;
-  `;
+      UPDATE qualitative_questions
+      SET indicator = ?, indicator_definition = ?, evaluation_criteria = ?, reference_info = ?
+      WHERE id = ?;
+    `;
 
   const [result] = await pool.query(query, [
     indicator,
@@ -300,8 +313,8 @@ const getNextDiagnosisRoundService = async (userId, systemsId) => {
 
   const [rows] = await pool.query(
     `SELECT MAX(diagnosis_round) AS max_round
-     FROM assessment_result
-     WHERE user_id = ? AND systems_id = ?`,
+      FROM assessment_result
+      WHERE user_id = ? AND systems_id = ?`,
     [userId, systemsId]
   );
   return (rows[0].max_round || 0) + 1;

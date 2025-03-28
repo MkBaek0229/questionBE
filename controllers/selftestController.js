@@ -61,10 +61,14 @@ const getQualitativeQuestions = async (req, res, next) => {
 
 const getQuantitativeResponses = async (req, res, next) => {
   try {
-    const result = await getQuantitativeResponsesService(
-      req.params.systemId,
-      req.params.userId
-    );
+    // 세션에서 userId 가져오기
+    const userId = req.session.user?.id;
+    if (!userId) {
+      return next(new AppError("로그인이 필요합니다", 401));
+    }
+
+    const { systemId } = req.params;
+    const result = await getQuantitativeResponsesService({ systemId, userId });
     res.status(200).json(result);
   } catch (error) {
     next(new AppError("정량 응답 조회 실패: " + error.message, 500));
@@ -73,13 +77,18 @@ const getQuantitativeResponses = async (req, res, next) => {
 
 const getQualitativeResponses = async (req, res, next) => {
   try {
-    const result = await getQualitativeResponsesService(
-      req.params.systemId,
-      req.params.userId
-    );
+    // 세션에서 userId 가져오기
+    const userId = req.session.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: "로그인이 필요합니다" });
+    }
+
+    const { systemId } = req.params;
+    const result = await getQualitativeResponsesService({ systemId, userId });
     res.status(200).json(result);
   } catch (error) {
-    next(new AppError("정성 응답 조회 실패: " + error.message, 500));
+    console.error("정성평가 응답 조회 오류:", error);
+    res.status(500).json({ message: "정성 응답 조회 실패: " + error.message });
   }
 };
 

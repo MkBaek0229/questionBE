@@ -33,12 +33,12 @@ router.post(
 router.get("/quantitative-questions", csrfProtection, getQuantitativeQuestions);
 router.get("/qualitative-questions", csrfProtection, getQualitativeQuestions);
 router.get(
-  "/quantitative-responses/:systemId/:userId",
+  "/quantitative-responses/:systemId",
   csrfProtection,
   getQuantitativeResponses
 );
 router.get(
-  "/qualitative-responses/:systemId/:userId",
+  "/qualitative-responses/:systemId",
   csrfProtection,
   getQualitativeResponses
 );

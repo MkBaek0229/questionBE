@@ -215,9 +215,23 @@ const getAssessmentStatusesService = async () => {
   return statusMap;
 };
 
-const getCategoryProtectionScoresService = async ({ systemId }) => {
+const getCategoryProtectionScoresService = async ({
+  systemId,
+  diagnosisRound,
+}) => {
   if (!systemId) {
     throw new Error("systemId가 필요합니다.");
+  }
+  // 회차가 지정되지 않은 경우 최신 회차 조회
+  let roundToUse = diagnosisRound; // 변수 초기화
+  if (!roundToUse) {
+    const [latestRound] = await pool.query(
+      `SELECT MAX(diagnosis_round) as latest_round 
+      FROM assessment_result 
+      WHERE systems_id = ?`,
+      [systemId]
+    );
+    roundToUse = latestRound[0]?.latest_round || 1;
   }
 
   const [currentScores] = await pool.query(
@@ -236,11 +250,11 @@ const getCategoryProtectionScoresService = async ({ systemId }) => {
       FROM quantitative_responses qr
       JOIN quantitative_questions qq ON qr.question_id = qq.id
       JOIN categories c ON qq.category_id = c.id
-      WHERE qr.systems_id = ?
+      WHERE qr.systems_id = ? AND qr.diagnosis_round = ? 
       GROUP BY c.name
       ORDER BY avg_score DESC
     `,
-    [systemId]
+    [systemId, roundToUse]
   );
 
   const [maxScores] = await pool.query(`

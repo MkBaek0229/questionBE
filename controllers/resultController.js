@@ -19,7 +19,7 @@ const completeSelfTest = async (req, res, next) => {
 
 const getAssessmentResults = async (req, res, next) => {
   try {
-    const userId = req.session.userId; // ✅ 세션에서 추출
+    const userId = req.session.user?.id; // ✅ 세션에서 추출
     const systemId = req.query.systemId;
 
     const results = await getAssessmentResultsService({ userId, systemId });
@@ -38,12 +38,19 @@ const getAssessmentStatuses = async (req, res, next) => {
   }
 };
 
-const getCategoryProtectionScores = async (req, res, next) => {
+const getCategoryProtectionScores = async (req, res) => {
   try {
-    const categoryScores = await getCategoryProtectionScoresService(req.params);
+    const { systemId } = req.params;
+    const { diagnosisRound } = req.query; // URL 쿼리에서 회차 정보 추출
+
+    const categoryScores = await getCategoryProtectionScoresService({
+      systemId,
+      diagnosisRound: diagnosisRound ? parseInt(diagnosisRound) : undefined,
+    });
+
     res.status(200).json(categoryScores);
   } catch (error) {
-    next(new AppError("카테고리 보호 점수 조회 실패: " + error.message, 500));
+    res.status(500).json({ message: error.message });
   }
 };
 const getDiagnosisRounds = async (req, res, next) => {
