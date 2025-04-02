@@ -244,45 +244,94 @@ const SupergetQualitativeResponsesService = async (systemId) => {
 };
 
 const addQuantitativeQuestionService = async (data) => {
-  const { question, evaluationCriteria, legalBasis, category_id } = data;
+  const {
+    question,
+    evaluation_criteria, // ← evaluationCriteria에서 변경
+    legal_basis, // ← legalBasis에서 변경
+    category_id,
+    score_fulfilled, // 추가 점수 필드
+    score_unfulfilled,
+    score_consult,
+    score_not_applicable,
+    question_number,
+  } = data;
 
-  if (!question || !evaluationCriteria || !category_id) {
+  // 검증 로직 수정
+  if (!question || !evaluation_criteria || !category_id) {
     throw new Error("필수 입력 항목이 누락되었습니다.");
   }
 
+  // 쿼리에 추가 필드 포함
   const query = `
-    INSERT INTO quantitative_questions (question, evaluation_criteria, legal_basis, category_id)
-    VALUES (?, ?, ?, ?);
+    INSERT INTO quantitative_questions (
+      question, 
+      evaluation_criteria, 
+      legal_basis, 
+      category_id,
+      score_fulfilled,
+      score_unfulfilled,
+      score_consult,
+      score_not_applicable,
+      question_number
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
   `;
 
   const [result] = await pool.query(query, [
     question,
-    evaluationCriteria,
-    legalBasis || null,
+    evaluation_criteria,
+    legal_basis || null,
     category_id,
+    score_fulfilled || 100,
+    score_unfulfilled || 0,
+    score_consult || 0,
+    score_not_applicable || 0,
+    question_number || null,
   ]);
 
   return result;
 };
 
 const editQuantitativeQuestionService = async (id, data) => {
-  const { question, evaluationCriteria, legalBasis, category_id } = data;
+  // snake_case로 변경
+  const {
+    question,
+    evaluation_criteria, // camelCase에서 snake_case로 변경
+    legal_basis, // camelCase에서 snake_case로 변경
+    category_id,
+    score_fulfilled, // 추가: 점수 필드
+    score_unfulfilled,
+    score_consult,
+    score_not_applicable,
+  } = data;
 
-  if (!question || !evaluationCriteria || !category_id) {
+  if (!question || !evaluation_criteria || !category_id) {
     throw new Error("필수 입력 항목이 누락되었습니다.");
   }
 
+  // 점수 필드를 포함하도록 쿼리 확장
   const query = `
     UPDATE quantitative_questions
-    SET question = ?, evaluation_criteria = ?, legal_basis = ?, category_id = ?
+    SET question = ?, 
+        evaluation_criteria = ?, 
+        legal_basis = ?, 
+        category_id = ?,
+        score_fulfilled = ?,
+        score_unfulfilled = ?,
+        score_consult = ?,
+        score_not_applicable = ?
     WHERE id = ?;
   `;
 
   const [result] = await pool.query(query, [
     question,
-    evaluationCriteria,
-    legalBasis || null,
+    evaluation_criteria,
+    legal_basis || null,
     category_id,
+    score_fulfilled || 100,
+    score_unfulfilled || 0,
+    score_consult || 0,
+    score_not_applicable || 0,
     id,
   ]);
 
@@ -331,13 +380,13 @@ const addQualitativeQuestionService = async (data) => {
 const editQualitativeQuestionService = async (id, data) => {
   const {
     indicator,
-    indicatorDefinition,
-    evaluationCriteria,
-    referenceInfo,
+    indicator_definition,
+    evaluation_criteria,
+    reference_info,
     category_id,
   } = data;
 
-  if (!indicator || !evaluationCriteria || !category_id) {
+  if (!indicator || !evaluation_criteria || !category_id) {
     throw new Error("필수 입력 항목이 누락되었습니다.");
   }
 
@@ -349,9 +398,9 @@ const editQualitativeQuestionService = async (id, data) => {
 
   const [result] = await pool.query(query, [
     indicator,
-    indicatorDefinition || null,
-    evaluationCriteria,
-    referenceInfo || null,
+    indicator_definition || null,
+    evaluation_criteria,
+    reference_info || null,
     category_id,
     id,
   ]);

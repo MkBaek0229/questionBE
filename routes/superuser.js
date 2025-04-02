@@ -36,10 +36,10 @@ const router = express.Router();
 
 router.get("/users", csrfProtection, requireSuperUser, getAllUsers);
 router.get("/users/:id", csrfProtection, requireSuperUser, getUserById);
-router.delete("/users/:id", csrfProtection, requireSuperUser, deleteUser);
+router.delete("/user/:id", csrfProtection, requireSuperUser, deleteUser);
 router.get("/experts", csrfProtection, requireSuperUser, getAllExperts);
 router.get("/experts/:id", csrfProtection, requireSuperUser, getExpertById);
-router.delete("/experts/:id", csrfProtection, requireSuperUser, deleteExpert);
+router.delete("/expert/:id", csrfProtection, requireSuperUser, deleteExpert);
 router.get("/systems", csrfProtection, requireSuperUser, getAllSystems);
 router.get(
   "/systems/:systemId/experts",

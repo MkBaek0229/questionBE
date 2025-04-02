@@ -7,8 +7,8 @@ import csrfProtection from "../middlewares/csrf.js";
 
 const router = express.Router();
 
-router.post("/upload/image", csrfProtection, uploadImage);
+router.post("/image", csrfProtection, uploadImage);
 
-router.post("/upload/document", csrfProtection, uploadDocument);
+router.post("/document", csrfProtection, uploadDocument);
 
 export default router;
