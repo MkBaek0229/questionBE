@@ -26,6 +26,7 @@ import {
   addCategoryService,
   updateCategoryService,
   deleteCategoryService,
+  getSuperUserInfoService,
 } from "../services/superuserService.js";
 import AppError from "../utils/appError.js";
 
@@ -139,9 +140,18 @@ const getMatchedExperts = async (req, res, next) => {
 };
 
 const loginSuperUser = async (req, res, next) => {
-  const { email, password } = req.body;
   try {
-    const superuser = await loginSuperUserService(email, password, req);
+    const superuser = await loginSuperUserService(req.body);
+
+    req.session.superuser = superuser;
+
+    if (!req.session.remeberMe) {
+      req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000; // 7일
+    } else {
+      // 미체크: 브라우저 종료 시 쿠키 만료 (세션 쿠키)
+      req.session.cookie.expires = false;
+    }
+
     res.status(200).json({
       message: "로그인 성공",
       data: superuser,
@@ -151,9 +161,19 @@ const loginSuperUser = async (req, res, next) => {
   }
 };
 
-const logoutSuperUser = (req, res, next) => {
+const logoutSuperUser = async (req, res, next) => {
   try {
-    logoutSuperUserService(req, res);
+    await logoutSuperUserService(req);
+
+    // 쿠키 삭제는 컨트롤러에서 처리
+    res.clearCookie("connect.sid", {
+      path: "/",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    // 응답은 한 번만
     res.status(200).json({ message: "로그아웃 성공" });
   } catch (error) {
     next(new AppError("로그아웃 실패: " + error.message, 500));
@@ -171,9 +191,9 @@ const getSystemById = async (req, res, next) => {
 };
 
 const matchExpertsToSystem = async (req, res, next) => {
-  const { systemId, expertIds } = req.body;
+  const { systemId, expertId } = req.body;
   try {
-    await matchExpertsToSystemService(systemId, expertIds);
+    await matchExpertsToSystemService(systemId, [expertId]);
     res.status(200).json({
       resultCode: "S-1",
       msg: "전문가 매칭 성공",
@@ -353,6 +373,21 @@ const deleteCategory = async (req, res, next) => {
   }
 };
 
+// 슈퍼유저 세션 체크 (추가)
+const getSuperUserInfo = async (req, res, next) => {
+  try {
+    if (!req.session.superuser) {
+      return next(new AppError("슈퍼유저 로그인이 필요합니다.", 401));
+    }
+    const superUserInfo = await getSuperUserInfoService(
+      req.session.superuser.id
+    );
+    res.status(200).json({ data: superUserInfo });
+  } catch (error) {
+    next(new AppError("슈퍼유저 정보 조회 실패: " + error.message, 500));
+  }
+};
+
 export {
   getAllUsers,
   getUserById,
@@ -381,4 +416,5 @@ export {
   addCategory,
   updateCategory,
   deleteCategory,
+  getSuperUserInfo,
 };

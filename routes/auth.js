@@ -13,6 +13,6 @@ const router = express.Router();
 router.post("/register", validateUserInput, csrfProtection, register);
 router.post("/login", csrfProtection, login);
 router.post("/logout", csrfProtection, logout);
-router.get("/user", getUserInfo);
+router.get("/info", getUserInfo);
 
 export default router;

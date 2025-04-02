@@ -215,71 +215,6 @@ const getAssessmentStatusesService = async () => {
   return statusMap;
 };
 
-const getCategoryProtectionScoresService = async ({
-  systemId,
-  diagnosisRound,
-}) => {
-  if (!systemId) {
-    throw new Error("systemId가 필요합니다.");
-  }
-  // 회차가 지정되지 않은 경우 최신 회차 조회
-  let roundToUse = diagnosisRound; // 변수 초기화
-  if (!roundToUse) {
-    const [latestRound] = await pool.query(
-      `SELECT MAX(diagnosis_round) as latest_round 
-      FROM assessment_result 
-      WHERE systems_id = ?`,
-      [systemId]
-    );
-    roundToUse = latestRound[0]?.latest_round || 1;
-  }
-
-  const [currentScores] = await pool.query(
-    `
-      SELECT 
-          c.name AS category_name, 
-          AVG(
-              CASE 
-                  WHEN qr.response = '이행' THEN qq.score_fulfilled
-                  WHEN qr.response = '자문필요' THEN qq.score_consult
-                  WHEN qr.response = '미이행' THEN qq.score_unfulfilled
-                  WHEN qr.response = '해당없음' THEN qq.score_not_applicable
-                  ELSE 0 
-              END
-          ) AS avg_score
-      FROM quantitative_responses qr
-      JOIN quantitative_questions qq ON qr.question_id = qq.id
-      JOIN categories c ON qq.category_id = c.id
-      WHERE qr.systems_id = ? AND qr.diagnosis_round = ? 
-      GROUP BY c.name
-      ORDER BY avg_score DESC
-    `,
-    [systemId, roundToUse]
-  );
-
-  const [maxScores] = await pool.query(`
-    SELECT 
-        c.name AS category_name, 
-        MAX(qq.score_fulfilled) AS max_score
-    FROM quantitative_questions qq
-    JOIN categories c ON qq.category_id = c.id
-    GROUP BY c.name
-  `);
-
-  const categoryScores = currentScores.map((cs) => {
-    const maxScore =
-      maxScores.find((ms) => ms.category_name === cs.category_name)
-        ?.max_score || 5;
-    return {
-      category: cs.category_name,
-      currentScore: cs.avg_score,
-      maxScore: maxScore,
-    };
-  });
-
-  return categoryScores;
-};
-
 const getDiagnosisRoundsService = async ({ userId, systemId }) => {
   if (!userId || !systemId) throw new Error("필수 정보 누락");
 
@@ -313,11 +248,88 @@ const getResultByRoundService = async ({
   return rows[0];
 };
 
+const getCategoryComparisonService = async (systemId, userId) => {
+  // 먼저 해당 시스템에 대한 진단 데이터가 있는지 확인
+  const checkDiagnosisQuery = `
+    SELECT COUNT(*) as count
+    FROM quantitative_responses
+    WHERE systems_id = ? AND user_id = ?
+  `;
+
+  const [diagnosisCheck] = await pool.query(checkDiagnosisQuery, [
+    systemId,
+    userId,
+  ]);
+
+  // 자가진단 데이터가 없는 경우
+  if (diagnosisCheck[0].count === 0) {
+    return { hasDiagnosis: false };
+  }
+
+  // 자가진단 데이터가 있는 경우 카테고리별 비교 데이터 조회
+  const query = `
+    SELECT 
+      c.id AS category_id,
+      c.name AS category_name,
+      SUM(
+        CASE
+          WHEN qr.response = '이행' THEN qq.score_fulfilled
+          WHEN qr.response = '미이행' THEN qq.score_unfulfilled
+          WHEN qr.response = '자문필요' THEN qq.score_consult
+          WHEN qr.response = '해당없음' THEN qq.score_not_applicable
+          ELSE 0
+        END
+      ) AS actual_score,
+      SUM(qq.score_fulfilled) AS max_possible_score,
+      ROUND(
+        SUM(
+          CASE
+            WHEN qr.response = '이행' THEN qq.score_fulfilled
+            WHEN qr.response = '미이행' THEN qq.score_unfulfilled
+            WHEN qr.response = '자문필요' THEN qq.score_consult
+            WHEN qr.response = '해당없음' THEN qq.score_not_applicable
+            ELSE 0
+          END
+        ) / NULLIF(SUM(qq.score_fulfilled), 0) * 100, 
+        2
+      ) AS achievement_percentage
+    FROM 
+      categories c
+    LEFT JOIN 
+      quantitative_questions qq ON c.id = qq.category_id
+    LEFT JOIN 
+      quantitative_responses qr ON qq.id = qr.question_id 
+        AND qr.systems_id = ?
+        AND qr.user_id = ?
+        AND qr.diagnosis_round = (
+          SELECT MAX(diagnosis_round) 
+          FROM quantitative_responses
+          WHERE systems_id = ? AND user_id = ?
+        )
+    GROUP BY 
+      c.id, c.name
+    ORDER BY 
+      achievement_percentage ASC;
+  `;
+
+  const [results] = await pool.query(query, [
+    systemId,
+    userId,
+    systemId,
+    userId,
+  ]);
+
+  return {
+    hasDiagnosis: true,
+    data: results,
+  };
+};
+
 export {
   completeSelfTestService,
   getAssessmentResultsService,
   getAssessmentStatusesService,
-  getCategoryProtectionScoresService,
   getDiagnosisRoundsService,
   getResultByRoundService,
+  getCategoryComparisonService,
 };

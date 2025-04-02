@@ -12,9 +12,11 @@ import {
   updateQuantitativeQuestion,
   updateQualitativeQuestion,
   getNextDiagnosisRound,
+  getDiagnosisRounds,
 } from "../controllers/selftestController.js";
 import csrfProtection from "../middlewares/csrf.js";
 import { requireSuperUser } from "../middlewares/auth.js";
+import { getDiagnosisRoundsService } from "../services/selftestService.js";
 
 const router = express.Router();
 
@@ -30,6 +32,7 @@ router.post(
   csrfProtection,
   submitQualitativeResponses
 );
+router.get("/diagnosis-rounds/:systemId", csrfProtection, getDiagnosisRounds);
 router.get("/quantitative-questions", csrfProtection, getQuantitativeQuestions);
 router.get("/qualitative-questions", csrfProtection, getQualitativeQuestions);
 router.get(

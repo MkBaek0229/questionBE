@@ -62,32 +62,29 @@ const loginExpertService = async ({ email, password }) => {
   };
 };
 
-const logoutExpertService = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ resultCode: "F-1", msg: "로그아웃 실패" });
-    }
-
-    res.clearCookie("connect.sid", {
-      path: "/",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+const logoutExpertService = (req) => {
+  return new Promise((resolve, reject) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return reject(new Error("세션 삭제 실패"));
+      }
+      resolve("세션 삭제 성공");
     });
-
-    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
-
-    res.status(200).json({ resultCode: "S-1", msg: "로그아웃 성공" });
   });
 };
 
-const getExpertInfoService = (req, res) => {
-  if (!req.session || !req.session.expert) {
-    return res
-      .status(401)
-      .json({ resultCode: "F-1", msg: "로그인이 필요합니다." });
+const getExpertInfoService = async (expertId) => {
+  // expertId로 전문가 정보 조회
+  const [rows] = await pool.query(
+    "SELECT id, email, name, institution_name, ofcps, phone_number, major_carrea FROM expert WHERE id = ?",
+    [expertId]
+  );
+
+  if (!rows || rows.length === 0) {
+    throw new Error("전문가를 찾을 수 없습니다.");
   }
-  res.status(200).json({ resultCode: "S-1", expert: req.session.expert });
+
+  return rows[0];
 };
 
 const getAllExpertsService = async () => {

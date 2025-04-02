@@ -177,14 +177,44 @@ const getQualitativeQuestionsService = async () => {
   return results;
 };
 
-const getQuantitativeResponsesService = async ({ systemId, userId }) => {
-  // 가장 최근 회차 조회
-  const [roundResult] = await pool.query(
-    `SELECT MAX(diagnosis_round) as max_round FROM quantitative_responses 
-     WHERE systems_id = ? AND user_id = ?`,
-    [systemId, userId]
-  );
-  const diagnosisRound = roundResult[0]?.max_round || 1;
+// getDiagnosisRoundsService 함수 개선 예시
+const getDiagnosisRoundsService = async ({ systemId, userId }) => {
+  // assessment_result 테이블과 조인하여 날짜 정보 가져오기
+  const query = `
+    SELECT DISTINCT 
+      qr.diagnosis_round, 
+      COUNT(DISTINCT qr.question_id) as question_count,
+      MAX(ar.completed_at) as diagnosis_date  /* 날짜 정보 추가 */
+    FROM quantitative_responses qr
+    LEFT JOIN assessment_result ar 
+      ON qr.systems_id = ar.systems_id 
+      AND qr.user_id = ar.user_id 
+      AND qr.diagnosis_round = ar.diagnosis_round
+    WHERE qr.systems_id = ? AND qr.user_id = ?
+    GROUP BY qr.diagnosis_round
+    ORDER BY qr.diagnosis_round DESC;
+  `;
+
+  const [results] = await pool.query(query, [systemId, userId]);
+  return results;
+};
+
+const getQuantitativeResponsesService = async ({
+  systemId,
+  userId,
+  round = null,
+}) => {
+  // round가 지정되지 않았으면 최근 회차 조회
+  let diagnosisRound = round;
+
+  if (!diagnosisRound) {
+    const [roundResult] = await pool.query(
+      `SELECT MAX(diagnosis_round) as max_round FROM quantitative_responses 
+       WHERE systems_id = ? AND user_id = ?`,
+      [systemId, userId]
+    );
+    diagnosisRound = roundResult[0]?.max_round || 1;
+  }
 
   const query = `
     SELECT 
@@ -205,19 +235,29 @@ const getQuantitativeResponsesService = async ({ systemId, userId }) => {
   `;
 
   const [results] = await pool.query(query, [systemId, userId, diagnosisRound]);
-  return results;
+
+  // 회차 정보를 응답에 포함
+  return {
+    diagnosisRound,
+    responses: results,
+  };
 };
+const getQualitativeResponsesService = async ({
+  systemId,
+  userId,
+  round = null,
+}) => {
+  let diagnosisRound = round;
 
-const getQualitativeResponsesService = async ({ systemId, userId }) => {
-  // 가장 최근 회차 조회
-  const [roundResult] = await pool.query(
-    `SELECT MAX(diagnosis_round) as max_round FROM qualitative_responses 
-     WHERE systems_id = ? AND user_id = ?`,
-    [systemId, userId]
-  );
-  const diagnosisRound = roundResult[0]?.max_round || 1;
+  if (!diagnosisRound) {
+    const [roundResult] = await pool.query(
+      `SELECT MAX(diagnosis_round) as max_round FROM qualitative_responses 
+       WHERE systems_id = ? AND user_id = ?`,
+      [systemId, userId]
+    );
+    diagnosisRound = roundResult[0]?.max_round || 1;
+  }
 
-  // 카테고리 JOIN 부분 수정 - qualitative_questions 테이블의 컬럼명 확인 필요
   const query = `
     SELECT 
       qq.question_number, 
@@ -236,9 +276,12 @@ const getQualitativeResponsesService = async ({ systemId, userId }) => {
   `;
 
   const [results] = await pool.query(query, [systemId, userId, diagnosisRound]);
-  return results;
-};
 
+  return {
+    diagnosisRound,
+    responses: results,
+  };
+};
 const updateQuantitativeQuestionService = async (data) => {
   const { questionId, question, evaluationCriteria, legalBasis, category_id } =
     data;
@@ -331,4 +374,5 @@ export {
   updateQuantitativeQuestionService,
   updateQualitativeQuestionService,
   getNextDiagnosisRoundService,
+  getDiagnosisRoundsService,
 };

@@ -9,6 +9,7 @@ import {
   updateQuantitativeQuestionService,
   updateQualitativeQuestionService,
   getNextDiagnosisRoundService,
+  getDiagnosisRoundsService,
 } from "../services/selftestService.js";
 import AppError from "../utils/appError.js";
 
@@ -41,6 +42,22 @@ const submitQualitativeResponses = async (req, res, next) => {
   }
 };
 
+// 회차 목록 조회 컨트롤러
+const getDiagnosisRounds = async (req, res, next) => {
+  try {
+    const userId = req.session.user?.id;
+    if (!userId) {
+      return next(new AppError("로그인이 필요합니다", 401));
+    }
+
+    const { systemId } = req.params;
+    const results = await getDiagnosisRoundsService({ systemId, userId });
+    res.status(200).json(results);
+  } catch (error) {
+    next(new AppError("회차 목록 조회 실패: " + error.message, 500));
+  }
+};
+
 const getQuantitativeQuestions = async (req, res, next) => {
   try {
     const result = await getQuantitativeQuestionsService();
@@ -61,14 +78,21 @@ const getQualitativeQuestions = async (req, res, next) => {
 
 const getQuantitativeResponses = async (req, res, next) => {
   try {
-    // 세션에서 userId 가져오기
     const userId = req.session.user?.id;
     if (!userId) {
       return next(new AppError("로그인이 필요합니다", 401));
     }
 
     const { systemId } = req.params;
-    const result = await getQuantitativeResponsesService({ systemId, userId });
+    const { round } = req.query; // URL 쿼리 파라미터로 회차 받기
+
+    const diagnosisRound = round ? parseInt(round, 10) : null;
+    const result = await getQuantitativeResponsesService({
+      systemId,
+      userId,
+      round: diagnosisRound,
+    });
+
     res.status(200).json(result);
   } catch (error) {
     next(new AppError("정량 응답 조회 실패: " + error.message, 500));
@@ -77,18 +101,24 @@ const getQuantitativeResponses = async (req, res, next) => {
 
 const getQualitativeResponses = async (req, res, next) => {
   try {
-    // 세션에서 userId 가져오기
     const userId = req.session.user?.id;
     if (!userId) {
-      return res.status(401).json({ message: "로그인이 필요합니다" });
+      return next(new AppError("로그인이 필요합니다", 401));
     }
 
     const { systemId } = req.params;
-    const result = await getQualitativeResponsesService({ systemId, userId });
+    const { round } = req.query;
+
+    const diagnosisRound = round ? parseInt(round, 10) : null;
+    const result = await getQualitativeResponsesService({
+      systemId,
+      userId,
+      round: diagnosisRound,
+    });
+
     res.status(200).json(result);
   } catch (error) {
-    console.error("정성평가 응답 조회 오류:", error);
-    res.status(500).json({ message: "정성 응답 조회 실패: " + error.message });
+    next(new AppError("정성 응답 조회 실패: " + error.message, 500));
   }
 };
 
@@ -137,4 +167,5 @@ export {
   updateQuantitativeQuestion,
   updateQualitativeQuestion,
   getNextDiagnosisRound,
+  getDiagnosisRounds,
 };

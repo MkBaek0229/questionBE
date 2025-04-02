@@ -87,40 +87,35 @@ const getMatchedExpertsService = async (systemId) => {
   return rows;
 };
 
-const loginSuperUserService = async (email, password, req) => {
+const loginSuperUserService = async ({ email, password }) => {
   const [rows] = await pool.query("SELECT * FROM superuser WHERE email = ?", [
     email,
   ]);
-  if (rows.length === 0) {
+  if (!rows || rows.length === 0) {
     throw new Error("이메일 또는 비밀번호가 잘못되었습니다.");
   }
 
-  const user = rows[0];
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
+  const superuser = rows[0];
+
+  if (password !== superuser.password) {
     throw new Error("이메일 또는 비밀번호가 잘못되었습니다.");
   }
-
-  req.session.superuser = user;
-  return { id: user.id, email: user.email, name: user.name };
+  return {
+    id: superuser.id,
+    email: superuser.email,
+    name: superuser.name,
+    member_type: "superuser",
+  };
 };
 
-const logoutSuperUserService = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ resultCode: "F-1", msg: "로그아웃 실패" });
-    }
-
-    res.clearCookie("connect.sid", {
-      path: "/",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+const logoutSuperUserService = (req) => {
+  return new Promise((resolve, reject) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return reject(new Error("세션 삭제 실패"));
+      }
+      resolve("세션 삭제 성공");
     });
-
-    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
-
-    res.status(200).json({ resultCode: "S-1", msg: "로그아웃 성공" });
   });
 };
 
@@ -147,25 +142,48 @@ const getSystemByIdService = async (id) => {
 };
 
 const matchExpertsToSystemService = async (systemId, expertIds) => {
+  // 문자열 -> 숫자 변환
+  const numSystemId = Number(systemId);
+  const numExpertIds = Array.isArray(expertIds)
+    ? expertIds.map((id) => Number(id))
+    : [Number(expertIds)];
+
+  console.log("변환된 데이터:", { numSystemId, numExpertIds });
+
+  if (isNaN(numSystemId)) {
+    throw new Error("유효하지 않은 시스템 ID입니다");
+  }
+
+  if (numExpertIds.some((id) => isNaN(id))) {
+    throw new Error("유효하지 않은 전문가 ID가 포함되어 있습니다");
+  }
+
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
 
+    console.log("기존 매핑 삭제:", numSystemId);
+
     await connection.query("DELETE FROM assignment WHERE systems_id = ?", [
-      systemId,
+      numSystemId,
     ]);
 
-    for (const expertId of expertIds) {
+    console.log("새 매핑 추가:", numExpertIds);
+
+    for (const expertId of numExpertIds) {
+      console.log(`- ${expertId} 매핑 중...`);
+      // feedback_status 필드 값을 추가
       await connection.query(
-        "INSERT INTO assignment (systems_id, expert_id) VALUES (?, ?)",
-        [systemId, expertId]
+        "INSERT INTO assignment (systems_id, expert_id, feedback_status) VALUES (?, ?, ?)",
+        [numSystemId, expertId, "대기중"]
       );
     }
 
     await connection.commit();
   } catch (error) {
     await connection.rollback();
-    throw new Error("전문가 매칭 중 오류가 발생했습니다.");
+    console.error("매칭 오류 세부정보:", error);
+    throw new Error(`전문가 매칭 중 오류가 발생했습니다: ${error.message}`);
   } finally {
     connection.release();
   }
@@ -379,6 +397,19 @@ const deleteCategoryService = async (categoryId) => {
   }
 };
 
+const getSuperUserInfoService = async (superUserId) => {
+  const query = `
+    SELECT id, email, name, phone_number, created_at 
+    FROM SuperUser
+    WHERE id = ?;
+  `;
+  const [rows] = await pool.query(query, [superUserId]);
+  if (rows.length === 0) {
+    throw new Error("슈퍼유저 정보를 찾을 수 없습니다.");
+  }
+  return rows[0];
+};
+
 export {
   getAllUsersService,
   getUserByIdService,
@@ -407,4 +438,5 @@ export {
   addCategoryService,
   updateCategoryService,
   deleteCategoryService,
+  getSuperUserInfoService,
 };

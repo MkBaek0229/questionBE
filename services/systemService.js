@@ -149,6 +149,7 @@ const getSystemSummaryService = async (userId) => {
         ar.completed_at AS last_assessment_date,
         ar.score AS compliance_rate,
         ar.feedback_status,
+        ar.grade AS grade, 
         ROW_NUMBER() OVER (PARTITION BY s.id ORDER BY ar.completed_at DESC) AS rn
       FROM systems s
       INNER JOIN assessment_result ar

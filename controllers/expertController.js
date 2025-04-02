@@ -22,6 +22,14 @@ const loginExpert = async (req, res, next) => {
   try {
     const expert = await loginExpertService(req.body);
     req.session.expert = expert;
+
+    if (!req.session.remeberMe) {
+      req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000; // 7일
+    } else {
+      // 미체크: 브라우저 종료 시 쿠키 만료 (세션 쿠키)
+      req.session.cookie.expires = false;
+    }
+
     res
       .status(200)
       .json({ resultCode: "S-1", msg: "로그인 성공", data: expert });
@@ -30,25 +38,37 @@ const loginExpert = async (req, res, next) => {
   }
 };
 
-const logoutExpert = (req, res, next) => {
+const logoutExpert = async (req, res, next) => {
   try {
-    logoutExpertService(req, res);
-    res.status(200).json({ resultCode: "S-1", msg: "로그아웃 성공" });
+    await logoutExpertService(req);
+
+    // 쿠키 삭제는 컨트롤러에서만 처리
+    res.clearCookie("connect.sid", {
+      path: "/",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    // 응답은 한 번만
+    res.status(200).json({ message: "로그아웃 성공" });
   } catch (error) {
     next(new AppError("로그아웃 실패: " + error.message, 500));
   }
 };
 
-const getExpertInfo = (req, res, next) => {
+const getExpertInfo = async (req, res, next) => {
   try {
-    const expertInfo = getExpertInfoService(req, res);
-    res
-      .status(200)
-      .json({
-        resultCode: "S-1",
-        msg: "전문가 정보 조회 성공",
-        data: expertInfo,
-      });
+    if (!req.session.expert) {
+      return next(new AppError("전문가 로그인이 필요합니다.", 401));
+    }
+
+    const expertInfo = await getExpertInfoService(req.session.expert.id);
+    res.status(200).json({
+      resultCode: "S-1",
+      msg: "전문가 정보 조회 성공",
+      data: expertInfo,
+    });
   } catch (error) {
     next(new AppError("전문가 정보 조회 실패: " + error.message, 500));
   }

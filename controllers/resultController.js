@@ -2,7 +2,7 @@ import {
   completeSelfTestService,
   getAssessmentResultsService,
   getAssessmentStatusesService,
-  getCategoryProtectionScoresService,
+  getCategoryComparisonService,
   getDiagnosisRoundsService,
   getResultByRoundService,
 } from "../services/resultService.js";
@@ -38,21 +38,6 @@ const getAssessmentStatuses = async (req, res, next) => {
   }
 };
 
-const getCategoryProtectionScores = async (req, res) => {
-  try {
-    const { systemId } = req.params;
-    const { diagnosisRound } = req.query; // URL 쿼리에서 회차 정보 추출
-
-    const categoryScores = await getCategoryProtectionScoresService({
-      systemId,
-      diagnosisRound: diagnosisRound ? parseInt(diagnosisRound) : undefined,
-    });
-
-    res.status(200).json(categoryScores);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 const getDiagnosisRounds = async (req, res, next) => {
   try {
     const userId = req.session.user?.id;
@@ -85,11 +70,38 @@ const getResultByRound = async (req, res, next) => {
   }
 };
 
+const getCategoryComparison = async (req, res, next) => {
+  try {
+    const { systemId } = req.params;
+    const userId = req.session.user?.id;
+
+    if (!userId) {
+      throw new Error("로그인이 필요합니다.");
+    }
+
+    const results = await getCategoryComparisonService(systemId, userId);
+
+    // 자가진단 여부 확인 (결과가 빈 배열이거나 hasDiagnosis 속성이 false인 경우)
+    if (!results || results.hasDiagnosis === false) {
+      return res.status(404).json({
+        status: "error",
+        message: "자가진단이 필요합니다.",
+      });
+    }
+
+    res.status(200).json(results.data || results);
+  } catch (error) {
+    next(
+      new AppError("카테고리별 비교 데이터 조회 실패: " + error.message, 500)
+    );
+  }
+};
+
 export {
   completeSelfTest,
   getAssessmentResults,
   getAssessmentStatuses,
-  getCategoryProtectionScores,
   getDiagnosisRounds,
   getResultByRound,
+  getCategoryComparison,
 };

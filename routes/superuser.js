@@ -27,6 +27,7 @@ import {
   addCategory,
   updateCategory,
   deleteCategory,
+  getSuperUserInfo,
 } from "../controllers/superuserController.js";
 import csrfProtection from "../middlewares/csrf.js";
 import { requireSuperUser } from "../middlewares/auth.js";
@@ -135,5 +136,7 @@ router.delete(
   requireSuperUser,
   deleteCategory
 );
+
+router.get("/info", requireSuperUser, getSuperUserInfo);
 
 export default router;

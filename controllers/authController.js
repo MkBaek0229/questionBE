@@ -19,8 +19,15 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const user = await loginUser(req.body);
-
     req.session.user = user;
+
+    if (!req.session.remeberMe) {
+      req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000; // 7일
+    } else {
+      // 미체크: 브라우저 종료 시 쿠키 만료 (세션 쿠키)
+      req.session.cookie.expires = false;
+    }
+
     console.log("로그인 후 세션 정보:", req.session); // 세션 상태 확인
 
     res.status(200).json({

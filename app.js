@@ -11,6 +11,8 @@ import superuserRoutes from "./routes/superuser.js";
 import systemRoutes from "./routes/system.js";
 import uploadRoutes from "./routes/upload.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import sessionRoutes from "./routes/session.js";
+
 // 다른 라우트 파일들도 여기에 추가합니다.
 
 dotenv.config();
@@ -24,8 +26,7 @@ app.use("/selftest", selftestRoutes);
 app.use("/superuser", superuserRoutes);
 app.use("/system", systemRoutes);
 app.use("/upload", uploadRoutes);
-
-// 마지막에 에러 핸들러 등록
+app.use("/session", sessionRoutes); // 마지막에 에러 핸들러 등록
 app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
